@@ -2,7 +2,8 @@ $(document).ready(function(){
     var selection = '';//for playing selections
     //var available_notes = new Array("C,", "D,", "E,", "F,", "G,", "A,", "B,", "C", "D", "E", "F", "G", "A", "B", "c", "d", "e", "f", "g", "a", "b", "c'", "d'", "e'", "f'", "g'", "a'", "b'");
     var sharps = new Array("F", "f");
-    var flats = new Array("B", "b");    
+    var flats = new Array("B", "b"); 
+    var fourCharsAgo = '';   
     var threeCharsAgo = '';
     var charBeforeLast = '';
     var lastChar = '';
@@ -36,6 +37,7 @@ $(document).ready(function(){
     function findSurroundingChars() {
         var selector = document.getElementById("abc");
         var caretPos = GetCaretPosition(selector);
+        fourCharsAgo = returnChar(selector.value, caretPos -4, caretPos -3);
         threeCharsAgo = returnChar(selector.value, caretPos -3, caretPos -2);//three chars back
         charBeforeLast = returnChar(selector.value, caretPos -2, caretPos -1);//two chars back
         lastChar = returnChar(selector.value, caretPos -1, caretPos);//last char
@@ -115,12 +117,22 @@ $(document).ready(function(){
             if(charBeforeLast == '^' || charBeforeLast == '_' || charBeforeLast == '='){//if the user modified the note
                 
                 if(threeCharsAgo == charBeforeLast){//just how modified is this note anyway?
-                    $(this).play(threeCharsAgo + charBeforeLast + lastChar + keyPress);                    
+                    if(nextChar == ',' || nextChar == '\''){
+                        $(this).play(threeCharsAgo + charBeforeLast + lastChar + keyPress + nextChar);  
+                    } else {
+                        $(this).play(threeCharsAgo + charBeforeLast + lastChar + keyPress);                    
+                    }                    
                 }else{//ok it's only a single accidental
                     $(this).play(charBeforeLast + lastChar + keyPress);
                 } 
                 
-            }else{
+            } else if(lastChar == ',' || lastChar == '\'') { 
+                if(fourCharsAgo == threeCharsAgo){
+                    $(this).play(fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                } else {
+                    $(this).play(threeCharsAgo + charBeforeLast + lastChar + keyPress);                    
+                }  
+            } else { 
                 
                 if(key == "C" || key == "D dorian" || key == "G Mixolydian" || key == "A minor"){    
                     $(this).play(lastChar + keyPress); 

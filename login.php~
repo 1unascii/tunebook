@@ -1,0 +1,11 @@
+<?php
+session_start();
+?>
+<form action="auth.php" method="post">
+    <label>username:</label>
+        <input type="text" name="user_name"/><br />
+    <label>password:</label>
+        <input type="password" name="password"/><br />
+        <input type="submit" value="log in" name="login"/>
+        <input type="hidden" name="secret"/>
+</form>

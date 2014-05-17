@@ -1,0 +1,87 @@
+<--Contains the latest working database configuration-->
+<--Erases all data!!!-->
+DROP DATABASE mytunebook;
+CREATE DATABASE mytunebook;
+USE mytunebook;
+
+create table instruments(
+instrument_id int(9) NOT NULL auto_increment primary key,
+instrument varchar(50) NOT NULL
+)engine=innodb;
+
+create table countries(
+country_id int(9) NOT NULL auto_increment primary key,
+country varchar(50) NOT NULL
+)engine=innodb;
+
+create table regions(
+region_id int(9) NOT NULL auto_increment primary key,
+region varchar(50) NOT NULL,
+country_id int(9) NOT NULL,
+CONSTRAINT FOREIGN KEY (country_id) REFERENCES countries (country_id)
+)engine=innodb;
+
+create table users(
+user_id int (9) NOT NULL auto_increment primary key,
+first_name varchar(50) NOT NULL,
+last_name varchar(50) NOT NULL,
+email varchar(50) NOT NULL,
+user_name varchar(50) NOT NULL,
+password binary(20) NOT NULL,
+INDEX(user_id)
+)engine=innodb;
+<--Creates a relationship between the user table and -->
+<--both the countries and regions table-->
+create table user_location(
+user_location_id int(9) NOT NULL auto_increment primary key,
+user_id int(9) NOT NULL,
+country_id int(9),
+region_id int(9),
+CONSTRAINT FOREIGN KEY (country_id) REFERENCES countries (country_id),
+CONSTRAINT FOREIGN KEY (region_id) REFERENCES regions (region_id)
+)engine=innodb;
+
+create table user_instruments(
+user_instrument_id int(9) NOT NULL auto_increment primary key,
+instrument_id int(9) NOT NULL,
+user_id int(9) NOT NULL,
+CONSTRAINT FOREIGN KEY (instrument_id) REFERENCES instruments (instrument_id),
+CONSTRAINT FOREIGN KEY (user_id) REFERENCES users (user_id)
+)engine=innodb;
+
+create table composers(
+composer_id int(9) auto_increment primary key,
+first_name varchar(50),
+last_name varchar(50)
+)engine=innodb;
+
+create table tunes(
+tune_id int(9) NOT NULL auto_increment primary key,
+tune_title varchar(50) NOT NULL,
+tune_type varchar(50),
+metre varchar(9) NOT NULL,
+default_note_length varchar(9) NOT NULL,
+composer int(9) NOT NULL,
+source varchar(50) NOT NULL,
+transcriber int(9) NOT NULL,
+country int(9) NOT NULL,
+region int(9) NOT NULL,
+instrument int(9) NOT NULL,
+tune_key varchar(12) NOT NULL,
+tune_body longtext NOT NULL,
+audio_location varchar(500),
+video_location varchar(500),
+CONSTRAINT FOREIGN KEY (composer) REFERENCES composers (composer_id),
+CONSTRAINT FOREIGN KEY (transcriber) REFERENCES users (user_id),
+CONSTRAINT FOREIGN KEY (country) REFERENCES countries (country_id),
+CONSTRAINT FOREIGN KEY (region) REFERENCES regions (region_id),
+CONSTRAINT FOREIGN KEY (instrument) REFERENCES instruments (instrument_id)
+)engine=innodb;
+
+create table user_tunes(
+user_tune_id int(9) NOT NULL auto_increment primary key,
+user_id int(9) NOT NULL,
+tune_id int(9) NOT NULL
+)engine=innodb;
+
+

@@ -1,7 +1,7 @@
 
 $(document).ready(function(){
     $('#tunes').dataTable();
-    
+    $('td').css("font: Times New Roman");
     //delete a tune from database
     $(".ui-icon-trash").on("click", function(){
         

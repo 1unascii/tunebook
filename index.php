@@ -5,7 +5,7 @@
     include_once('links.php');
 ?>
 <br />
-<div id='content' class="ui-widget-content">
+<div id='content'>
 <?php
     
     include_once('tunes.php');

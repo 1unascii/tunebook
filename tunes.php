@@ -12,12 +12,13 @@
 
 <!--START A TABLE-->
 <table id='tunes' >
-    <thead class="ui-state-default">
+    <thead >
         <th>Title</th>
         <th>Transcriber</th>
         <th>Composer</th>
         <th>Metre</th>        
         <th>Key</th>
+        <!--If the user is authenticated-->
         <?php
             if($_SESSION['Authenticated']){
                 ?>
@@ -26,7 +27,7 @@
             }        
         ?>
     </thead>
-    <tbody class="ui-state-default">
+    <tbody >
     
         <?php
         //print_r($tunes);
@@ -54,8 +55,7 @@
                             <?php
                                 $composer_id = $value['composer_id'];
                                 $composer = simpleQuery("SELECT composer_name FROM composers WHERE composer_id = $composer_id");
-                                echo $composer[0]['composer_name'];
-                                
+                                echo $composer[0]['composer_name'];                                
                             ?>
                         
                         </td>

@@ -32,18 +32,20 @@ $(document).ready(function(){
         return selector.substring(caretStart, caretEnd);        
     }
     
-    /*jQuedry */
-    
+       
     function findSurroundingChars() {
         var selector = document.getElementById("abc");
         var caretPos = GetCaretPosition(selector);
-        fourCharsAgo = returnChar(selector.value, caretPos -4, caretPos -3);
+        sevenCharsAgo = returnChar(selector.value, caretPos -6, caretPos -5);//seven chars back
+        sixCharsAgo = returnChar(selector.value, caretPos -6, caretPos -5);//six chars back
+        fiveCharsAgo = returnChar(selector.value, caretPos -5, caretPos -4);//five chars back
+        fourCharsAgo = returnChar(selector.value, caretPos -4, caretPos -3);//four chars back
         threeCharsAgo = returnChar(selector.value, caretPos -3, caretPos -2);//three chars back
         charBeforeLast = returnChar(selector.value, caretPos -2, caretPos -1);//two chars back
         lastChar = returnChar(selector.value, caretPos -1, caretPos);//last char
         nextChar = returnChar(selector.value, caretPos, caretPos +1);//next char
         charAfterNext = returnChar(selector.value, caretPos +1, caretPos +2);//next char
-        threeCharsAhead = returnChar(selector.value, caretPos +2, caretPos +3);
+        threeCharsAhead = returnChar(selector.value, caretPos +2, caretPos +3);//three chars ahead
     }
     
     //octave is a boolean
@@ -69,18 +71,24 @@ $(document).ready(function(){
         }        
     }
     
+   
+
     $('#abc').on("click", function(){
         findSurroundingChars();
     })
     
+
     //play the notes as they are pressed
+    //function keyPress();
     $('#abc').on('keypress', function(event){
         
+
+
         findSurroundingChars();
         key = $('#key').val();        
         var c = event.which;//character code        
         var keyPress = String.fromCharCode(c);//convert it to a string
-        
+        var play;
         if(keyPress == '^' || keyPress == '_' || keyPress == '='){
             //Double Accidental with octave modifier
             if(nextChar == keyPress && threeCharsAhead == ',' || threeCharsAhead == '\''){
@@ -126,13 +134,56 @@ $(document).ready(function(){
                     $(this).play(charBeforeLast + lastChar + keyPress);
                 } 
                 
-            } else if(lastChar == ',' || lastChar == '\'') { 
-                if(fourCharsAgo == threeCharsAgo){
+            }else if(lastChar == ',' || lastChar == '\'') { 
+                
+                //test backwards for accidentals 
+                if(sixCharsAgo == '^' || sixCharsAgo == '_' || sixCharsAgo == '='){
+                    //test back further to see if it is a double accidental
+                    if(sevenCharsAgo == sixCharsAgo) {
+                        //play using the double accidental
+                        $(this).play(sevenCharsAgo + sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                    }else{
+                        //use only the single accidental modifier
+                        $(this).play(sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                    }
+                }else 
+                if(fiveCharsAgo == '^' || fiveCharsAgo == '_' || fiveCharsAgo == '='){                    
+                    if(sixCharsAgo == fiveCharsAgo) {                       
+                        $(this).play(sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                    }else{                        
+                        $(this).play(fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                    }
+                }else if(fourCharsAgo == '^' || fourCharsAgo == '_' || fourCharsAgo == '='){
+                    if(fiveCharsAgo == fourCharsAgo){                    
+                        $(this).play(fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                    }else{
+                        $(this).play(fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                    }               
+                }else if(threeCharsAgo == '^' || threeCharsAgo == '_' || threeCharsAgo == '=') {
+                    if(fourCharsAgo == threeCharsAgo){                    
+                        $(this).play(fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);    
+                    }else{
+                        $(this).play(threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                    }             
+                }else
+                //allow for no accidentals with multiple octave modifiers
+                if(fiveCharsAgo == ',' || fiveCharsAgo == '\''){
+                    $(this).play(sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                }else
+                if(fourCharsAgo == ',' || fourCharsAgo == '\''){
+                    $(this).play(fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                }else
+                if(threeCharsAgo == ',' || threeCharsAgo == '\''){
                     $(this).play(fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
-                } else {
-                    $(this).play(threeCharsAgo + charBeforeLast + lastChar + keyPress);                    
-                }  
-            } else { 
+                }else
+                if(charBeforeLast == ',' || charBeforeLast == '\''){
+                    $(this).play(threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                }else{
+                    $(this).play(charBeforeLast + lastChar + keyPress);
+                }   
+
+                
+            }else { 
                 
                 if(key == "C" || key == "D dorian" || key == "G Mixolydian" || key == "A minor"){    
                     $(this).play(lastChar + keyPress); 
@@ -281,6 +332,7 @@ $(document).ready(function(){
                 $(this).play(accidentalNotes(flats, '_', keyPress));
             }
         }
+
     });
     
     function getSelectionText() {

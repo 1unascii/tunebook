@@ -127,14 +127,17 @@ $(document).ready(function(){
                     //is it a a double accidental
                     if(sevenCharsAgo == sixCharsAgo) {
                         $(this).play(sevenCharsAgo + sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                        output = sevenCharsAgo + sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                     }else {
                         //character before last with single accidental
                         $(this).play(sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                        output = sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                     }                                
                 }else {
                     $(this).play(fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                    output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                 }
-                return true;
+                return output;
             }else {
                 return false;
             }
@@ -146,14 +149,17 @@ $(document).ready(function(){
                     //is it a a double accidental
                     if(sixCharsAgo == fiveCharsAgo) {
                         $(this).play(sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                        output = sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                     }else {
                         //character before last with single accidental
                         $(this).play(fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                        output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                     }                                
                 }else {
                     $(this).play(fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                    output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                 }
-                return true;
+                return output;
             }else {
                 return false;
             }
@@ -164,7 +170,7 @@ $(document).ready(function(){
                 //test the character before threeCharsAgo for an accidental
                 if(fourCharsAgo == '^' || fourCharsAgo == '_' || fourCharsAgo == '=') {
                     //is it a a double accidental
-                    if(fiveCharsAgo == fiveCharsAgo) {
+                    if(fiveCharsAgo == fourCharsAgo) {
                         $(this).play(fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
                         output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                     }else {
@@ -174,8 +180,9 @@ $(document).ready(function(){
                     }                                
                 }else {
                     $(this).play(threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                    output = threeCharsAgo + charBeforeLast + lastChar + keyPress;
                 }
-                return true;
+                return output;
             }else {
                 return false;
             }
@@ -225,18 +232,20 @@ $(document).ready(function(){
                 }else {
                     //play using the double accidental
                     $(this).play(sevenCharsAgo + sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);    
+                    output = sevenCharsAgo + sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                 }
                 
             }else{
                 //use only the single accidental modifier
                $(this).play(sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+               output = sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
             }
             return true;
                         
         }
         //returns true if playback is executed
         function doubleAccidentalSixCharsAgo(){            
-            
+            var output = '';
             if(sixCharsAgo == fiveCharsAgo) {
                 //samples that will pass this without the current keypress (it's assumed the current and last keypress is a comma or apostrophe)
                 //__B,B,, //__B_B,,           //^^A,,A, ^^A__A'
@@ -250,6 +259,7 @@ $(document).ready(function(){
                 }else {
                     //play using the double accidental
                     $(this).play(sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);    
+                    output = sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                 }
                 
             }else{
@@ -257,61 +267,98 @@ $(document).ready(function(){
                 //special case
                 if(!letterCharBeforeLast()){
                     $(this).play(fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                    output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                 } else {
                     return false;
                 }
             }
-            return true;
+            return output;
                         
         }
         //returns true if playback is executed
         function doubleAccidentalFiveCharsAgo(){            
-            
+            var output = '';
             if(fiveCharsAgo == fourCharsAgo) {
+                alert(fiveCharsAgo + fourCharsAgo);
                 //samples that will pass this without the current keypress (it's assumed the current and last keypress is a comma or apostrophe)
-                //^^A,,A, ^^A__A'
+                //e.g...   //^^A,,A, ^^A__A'
                 if(charBeforeLast.match(letters)) {
                     
-                    letterCharBeforeLast();                    
+                    //letterCharBeforeLast(); 
+                    output = letterCharBeforeLast();                   
                                               
                 }else {
                     //play using the double accidental
-                    $(this).play(fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);    
+                    $(this).play(fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress); 
+                    output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;   
                 }
-                
+            //e.g...  //__B,,    //_B,,     //__B,
             }else{
-                //use only the single accidental modifier
-                
-                if(!letterThreeCharsBack()){
-                    $(this).play(fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                //use only the single accidental modifier                
+                if(threeCharsAgo.match(letters)){                    
+                    //output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress; //__B,,    //_B,, 
+                    output = letterThreeCharsAgo();
+                }else if(charBeforeLast.match(letters)){
+                    //output = threeCharsAgo + charBeforeLast + lastChar + keyPress; //__B,
+                    output = letterCharBeforeLast();
+                }else{
+                    return false;
                 }
                 
             }
-            return true;
+            return output;
                         
         }
         //returns true if playback is executed
         function doubleAccidentalFourCharsAgo(){            
-            
+            var output = '';
             if(fourCharsAgo == threeCharsAgo) {
+                alert(fourCharsAgo + threeCharsAgo);
                 //samples that will pass this without the current keypress (it's assumed the current and last keypress is a comma or apostrophe)
-                //^^A,,A, ^^A__A'
-                if(charBeforeLast.match(letters)) {
+                //^^A,,A, ^^A__A' __B,
+                //if(charBeforeLast.match(letters)) {
                     
-                    letterCharBeforeLast();                    
+                    //letterCharBeforeLast();                    
                                               
-                }else {
+                //}else 
                     //play using the double accidental
                     $(this).play(fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);    
-                }
+                    output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
+                //}
                 
             }else{
                 //use only the single accidental modifier
                $(this).play(threeCharsAgo + charBeforeLast + lastChar + keyPress);
+               output = threeCharsAgo + charBeforeLast + lastChar + keyPress;
             }
-            return true;
-                        
+            return output;                        
         }
+        function accidentalCharsAgo(charsAgo, functionToExecute, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8){
+            if(charsAgo == '^' || charsAgo == '_' || charsAgo == '='){
+                //presumably you are testing
+                if(arg8 !== void 0){
+                    return(functionToExecute(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
+                }else if(arg7 !== void 0){
+                    return(functionToExecute(arg1, arg2, arg3, arg4, arg5, arg6, arg7));
+                }else if(arg6 !== void 0){
+                    return(functionToExecute(arg1, arg2, arg3, arg4, arg5, arg6));
+                }else if(arg5 !== void 0){
+                    return(functionToExecute(arg1, arg2, arg3, arg4, arg5));
+                }else if(arg4 !== void 0){
+                    return(functionToExecute(arg1, arg2, arg3, arg4));
+                }else if (arg3 !== void 0){
+                    return(functionToExecute(arg1, arg2, arg3));
+                }else if (arg2 !== void 0){
+                    return(functionToExecute(arg1, arg2));
+                }else if (arg1 !== void 0){
+                    return(functionToExecute(arg1));
+                }else {
+                    return(functionToExecute());
+                }
+            }else {
+                return false
+            }           
+        }        
         if(keyPress == '^' || keyPress == '_' || keyPress == '='){
             //Double Accidental with octave modifier
             if(nextChar == keyPress && threeCharsAhead == ',' || threeCharsAhead == '\''){
@@ -368,6 +415,7 @@ $(document).ready(function(){
                     doubleAccidentalSixCharsAgo();//returns true if playback is executed
                 }else 
                 if(fourCharsAgo == '^' || fourCharsAgo == '_' || fourCharsAgo == '='){
+                    //alert("fourCharsAgo");
                     doubleAccidentalFiveCharsAgo();//returns true if playback is executed
                 }else 
                 if(threeCharsAgo == '^' || threeCharsAgo == '_' || threeCharsAgo == '=') {                    

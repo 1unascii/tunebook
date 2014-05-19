@@ -175,8 +175,13 @@ $(document).ready(function(){
                         output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                     }else {
                         //character before last with single accidental
-                        $(this).play(fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
-                        output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
+                        if(charBeforeLast.match(letters)){
+                            //output = charBeforeLast + lastChar + keyPress;
+                            output = letterCharBeforeLast();                            
+                        }else {
+                            $(this).play(fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                            output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
+                        }                        
                     }                                
                 }else {
                     $(this).play(threeCharsAgo + charBeforeLast + lastChar + keyPress);
@@ -355,6 +360,7 @@ $(document).ready(function(){
                 }else {
                     return(functionToExecute());
                 }
+
             }else {
                 return false
             }           

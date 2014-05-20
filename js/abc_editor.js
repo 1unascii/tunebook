@@ -36,8 +36,8 @@ $(document).ready(function(){
     function findSurroundingChars() {
         var selector = document.getElementById("abc");
         var caretPos = GetCaretPosition(selector);
-        eightCharsAgo = returnChar(selector.value, caretPos -7, caretPos -4);//eight chars back
-        sevenCharsAgo = returnChar(selector.value, caretPos -6, caretPos -5);//seven chars back
+        eightCharsAgo = returnChar(selector.value, caretPos -6, caretPos -7);//eight chars back
+        sevenCharsAgo = returnChar(selector.value, caretPos -7, caretPos -6);//seven chars back
         sixCharsAgo = returnChar(selector.value, caretPos -6, caretPos -5);//six chars back
         fiveCharsAgo = returnChar(selector.value, caretPos -5, caretPos -4);//five chars back
         fourCharsAgo = returnChar(selector.value, caretPos -4, caretPos -3);//four chars back
@@ -47,6 +47,9 @@ $(document).ready(function(){
         nextChar = returnChar(selector.value, caretPos, caretPos +1);//next char
         charAfterNext = returnChar(selector.value, caretPos +1, caretPos +2);//next char
         threeCharsAhead = returnChar(selector.value, caretPos +2, caretPos +3);//three chars ahead
+        fourCharsAhead = returnChar(selector.value, caretPos +3, caretPos +4);//four chars ahead
+        fiveCharsAhead = returnChar(selector.value, caretPos +4, caretPos +5);//five chars ahead
+        sixCharsAhead = returnChar(selector.value, caretPos +5, caretPos +6);//six chars ahead
     }
     
     //octave is a boolean
@@ -91,50 +94,17 @@ $(document).ready(function(){
         var c = event.which;//character code        
         var keyPress = String.fromCharCode(c);//convert it to a string
 
-        //tests back to a specified number of characters and includes them for playback. Plays if test is passed
-        /*function recursiveOctaveModifiers(charToTest, charBefore, howManyIterations){
-            var play = '';
-            var counter = 0;
-            //test backwards for accidentals 
-            if(charToTest == '^' || charToTest == '_' || charToTest == '='){
-                //test back further to see if it is a double accidental
-                if(charBefore == charToTest) {
-                    //play using the double accidental
-                    while(counter < howManyIterations + 1){
-                        play += charsBehindKeyPress[counter];
-                        counter++;
-                    }                    
-                }else{
-                    //use only the single accidental modifier
-                    while(counter < howManyIterations){
-                        play += charsBehindKeyPress[counter];
-                        counter++;
-                    }                    
-                }
-                //$(this).play(play);
-                return play;
-            }else {
-                return false;
-            }
-        }*/
-
         //two or more letters between the current character and an accidental invalidates the accidental
         //calls play() directly
         function letterFiveCharsAgo(){
-            if(fiveCharsAgo.match(letters)) {
-                //test the character before threeCharsAgo for an accidental
-                if(sixCharsAgo == '^' || sixCharsAgo == '_' || sixCharsAgo == '=') {
-                    //is it a a double accidental
-                    if(sevenCharsAgo == sixCharsAgo) {
-                        $(this).play(sevenCharsAgo + sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+            if(fiveCharsAgo.match(letters)) {                
+                if(sixCharsAgo == '^' || sixCharsAgo == '_' || sixCharsAgo == '=') {                    
+                    if(sevenCharsAgo == sixCharsAgo) {                        
                         output = sevenCharsAgo + sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                    }else {
-                        //character before last with single accidental
-                        $(this).play(sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                    }else {                        
                         output = sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                     }                                
-                }else {
-                    $(this).play(fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                }else {                    
                     output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                 }
                 return output;
@@ -143,20 +113,14 @@ $(document).ready(function(){
             }
         }
         function letterFourCharsAgo(){
-            if(fourCharsAgo.match(letters)) {
-                //test the character before threeCharsAgo for an accidental
-                if(fiveCharsAgo == '^' || fiveCharsAgo == '_' || fiveCharsAgo == '=') {
-                    //is it a a double accidental
-                    if(sixCharsAgo == fiveCharsAgo) {
-                        $(this).play(sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+            if(fourCharsAgo.match(letters)) {                
+                if(fiveCharsAgo == '^' || fiveCharsAgo == '_' || fiveCharsAgo == '=') {                    
+                    if(sixCharsAgo == fiveCharsAgo) {                        
                         output = sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                    }else {
-                        //character before last with single accidental
-                        $(this).play(fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                    }else {                        
                         output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                     }                                
-                }else {
-                    $(this).play(fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                }else {                    
                     output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                 }
                 return output;
@@ -167,24 +131,13 @@ $(document).ready(function(){
         function letterThreeCharsAgo(){
             var output = '';
             if(threeCharsAgo.match(letters)) {
-                //test the character before threeCharsAgo for an accidental
-                if(fourCharsAgo == '^' || fourCharsAgo == '_' || fourCharsAgo == '=') {
-                    //is it a a double accidental
-                    if(fiveCharsAgo == fourCharsAgo) {
-                        $(this).play(fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
+                if(fourCharsAgo == '^' || fourCharsAgo == '_' || fourCharsAgo == '=') {                    
+                    if(fiveCharsAgo == fourCharsAgo) {                        
                         output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                     }else {
-                        //character before last with single accidental
-                        if(charBeforeLast.match(letters)){
-                            //output = charBeforeLast + lastChar + keyPress;
-                            output = letterCharBeforeLast();                            
-                        }else {
-                            $(this).play(fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
-                            output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                        }                        
+                        output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;                                               
                     }                                
                 }else {
-                    $(this).play(threeCharsAgo + charBeforeLast + lastChar + keyPress);
                     output = threeCharsAgo + charBeforeLast + lastChar + keyPress;
                 }
                 return output;
@@ -194,169 +147,110 @@ $(document).ready(function(){
         }
         function letterCharBeforeLast() {
             var output = '';
-            if(charBeforeLast.match(letters)){
-                //test the character before last for an accidental
-                if(threeCharsAgo == '^' || threeCharsAgo == '_' || threeCharsAgo == '=') {
-                    //is it a a double accidental
-                    if(fourCharsAgo == threeCharsAgo) {
-                        $(this).play(fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
-                        output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                    }else {
-                        //character before last with single accidental
-                        $(this).play(threeCharsAgo + charBeforeLast + lastChar + keyPress);
-                        output = threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                    }                                
+            
+            if(threeCharsAgo == '^' || threeCharsAgo == '_' || threeCharsAgo == '='){
+                if(fourCharsAgo == threeCharsAgo) {
+                    output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;                    
                 }else {
-                    $(this).play(charBeforeLast + lastChar + keyPress);
-                    output = charBeforeLast + lastChar + keyPress;
-                }
-                return output;
+                    output = threeCharsAgo + charBeforeLast + lastChar + keyPress;                    
+                }    
             }else {
-                return false;
+                output = charBeforeLast + lastChar + keyPress;                
+                return output;
             }
+            return output;            
         }
         
-        //test backwards for accidentals //called from within a recursive octave
-        //calls play() directly
-        //returns true if playback is executed
-        function doubleAccidentalSevenCharsAgo(){            
+        //test backwards for accidentals 
+        function doubleAccidentalSevenCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo, fiveCharsAgo, sixCharsAgo, sevenCharsAgo){            
             
-            if(sevenCharsAgo == sixCharsAgo) {
-                //samples that will pass this without the current keypress (it's assumed the current and last keypress is a comma or apostrophe)
-                //__BB,,,                           //__B,B,, //__B_B,,           //^^A,,A, ^^A__A'
-                if(fourCharsAgo.match(letters) || threeCharsAgo.match(letters) || charBeforeLast.match(letters)) {
-                    
-                    if(letterCharBeforeLast()){
-                        //break;
-                    }else if (letterThreeCharsAgo()){
-                        //break;
-                    }else{
-                        letterFourCharsAgo();    
-                    }                  
-                                              
-                }else {
-                    //play using the double accidental
-                    $(this).play(sevenCharsAgo + sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);    
-                    output = sevenCharsAgo + sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                }
-                
+            if(sevenCharsAgo == sixCharsAgo) {  
+                output = sevenCharsAgo + sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
+                return output;
             }else{
-                //use only the single accidental modifier
-               $(this).play(sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
-               output = sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
+                output = sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
+                return output; 
             }
-            return true;
+            
                         
         }
-        //returns true if playback is executed
-        function doubleAccidentalSixCharsAgo(){            
+        
+        function doubleAccidentalSixCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo, fiveCharsAgo, sixCharsAgo){            
             var output = '';
             if(sixCharsAgo == fiveCharsAgo) {
-                //samples that will pass this without the current keypress (it's assumed the current and last keypress is a comma or apostrophe)
-                //__B,B,, //__B_B,,           //^^A,,A, ^^A__A'
-                if(threeCharsAgo.match(letters) || charBeforeLast.match(letters)) {
-                    
-                    if(letterCharBeforeLast()) {
-                        //break;
-                    }else {
-                        letterThreeCharsAgo();                       
-                    }                       
-                }else {
-                    //play using the double accidental
-                    $(this).play(sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);    
-                    output = sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                }
+                output = sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
+                return output;
                 
-            }else{
-                //use only the single accidental modifier
-                //special case
-                if(!letterCharBeforeLast()){
-                    $(this).play(fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
-                    output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                } else {
-                    return false;
-                }
-            }
-            return output;
+            }else{                
+                output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
+                return output;
+            }          
                         
         }
-        //returns true if playback is executed
-        function doubleAccidentalFiveCharsAgo(){            
+        
+        function doubleAccidentalFiveCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo, fiveCharsAgo){            
             var output = '';
             if(fiveCharsAgo == fourCharsAgo) {
-                alert(fiveCharsAgo + fourCharsAgo);
-                //samples that will pass this without the current keypress (it's assumed the current and last keypress is a comma or apostrophe)
-                //e.g...   //^^A,,A, ^^A__A'
-                if(charBeforeLast.match(letters)) {
-                    
-                    //letterCharBeforeLast(); 
-                    output = letterCharBeforeLast();                   
-                                              
-                }else {
-                    //play using the double accidental
-                    $(this).play(fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress); 
-                    output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;   
-                }
+                output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
+                return output;
             //e.g...  //__B,,    //_B,,     //__B,
-            }else{
-                //use only the single accidental modifier                
-                if(threeCharsAgo.match(letters)){                    
-                    //output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress; //__B,,    //_B,, 
-                    output = letterThreeCharsAgo();
-                }else if(charBeforeLast.match(letters)){
-                    //output = threeCharsAgo + charBeforeLast + lastChar + keyPress; //__B,
-                    output = letterCharBeforeLast();
-                }else{
-                    return false;
-                }
-                
+            }else{                
+                output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
+                return output;
             }
-            return output;
-                        
+                                     
         }
-        //returns true if playback is executed
-        function doubleAccidentalFourCharsAgo(){            
+        
+        function doubleAccidentalFourCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo){            
             var output = '';
             if(fourCharsAgo == threeCharsAgo) {
-                alert(fourCharsAgo + threeCharsAgo);
-                //samples that will pass this without the current keypress (it's assumed the current and last keypress is a comma or apostrophe)
-                //^^A,,A, ^^A__A' __B,
-                //if(charBeforeLast.match(letters)) {
-                    
-                    //letterCharBeforeLast();                    
+                output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
+                return output; 
+            }else {
+                output = threeCharsAgo + charBeforeLast + lastChar + keyPress;
+                return output;
+            } 
                                               
-                //}else 
-                    //play using the double accidental
-                    $(this).play(fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);    
-                    output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                //}
-                
-            }else{
-                //use only the single accidental modifier
-               $(this).play(threeCharsAgo + charBeforeLast + lastChar + keyPress);
-               output = threeCharsAgo + charBeforeLast + lastChar + keyPress;
-            }
-            return output;                        
         }
-        function accidentalCharsAgo(charsAgo, functionToExecute, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8){
-            if(charsAgo == '^' || charsAgo == '_' || charsAgo == '='){
-                //presumably you are testing
-                if(arg8 !== void 0){
-                    return(functionToExecute(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
-                }else if(arg7 !== void 0){
-                    return(functionToExecute(arg1, arg2, arg3, arg4, arg5, arg6, arg7));
+        function doubleAccidentalThreeCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo){            
+            var output = '';
+            if(threeCharsAgo == charBeforeLast) {
+                output = threeCharsAgo + charBeforeLast + lastChar + keyPress;
+                return output; 
+            }else {
+                output = charBeforeLast + lastChar + keyPress;
+                return output;
+            } 
+                                              
+        }
+        
+        //tests for an accidental the specified number of Characters Ago (charsAgo) e.g. fourCharsAgo
+                                            //functiontToExecute is a function that tests for a double accidental
+                                            //e.g. doubleAccidentalFiveCharsAgo 
+                                                                //switchArg will be a string like "sevenCharsAgo" *not implemented but the parameter is still required if params are used (hint! -- use any string, but preferably something that makes sense like name of the last parameter)
+                                                                            //arg0 should be the keyPress, 
+                                                                                //arg1 lastChar etc. //all 'arg' arguments should be strings
+        function accidentalCharsAgo(charsAgo, functionToExecute, switchArg, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7){
+            if(charsAgo == '^' || charsAgo == '_' || charsAgo == '='){                
+                /*if(arg8 !== void 0){
+                    return(functionToExecute(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
+                }else*/ // * not implmented *
+                if(arg7 !== void 0){
+                    return(functionToExecute(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7));
                 }else if(arg6 !== void 0){
-                    return(functionToExecute(arg1, arg2, arg3, arg4, arg5, arg6));
+                    return(functionToExecute(arg0, arg1, arg2, arg3, arg4, arg5, arg6));
                 }else if(arg5 !== void 0){
-                    return(functionToExecute(arg1, arg2, arg3, arg4, arg5));
+                    return(functionToExecute(arg0, arg1, arg2, arg3, arg4, arg5));
                 }else if(arg4 !== void 0){
-                    return(functionToExecute(arg1, arg2, arg3, arg4));
+                    return(functionToExecute(arg0, arg1, arg2, arg3, arg4));
                 }else if (arg3 !== void 0){
-                    return(functionToExecute(arg1, arg2, arg3));
+                    return(functionToExecute(arg0, arg1, arg2, arg3));
                 }else if (arg2 !== void 0){
-                    return(functionToExecute(arg1, arg2));
+                    return(functionToExecute(arg0, arg1, arg2));
                 }else if (arg1 !== void 0){
-                    return(functionToExecute(arg1));
+                    return(functionToExecute(arg0, arg1));
+                }else if(arg0 !== void 0){
+                    return(functionToExecute(arg0));
                 }else {
                     return(functionToExecute());
                 }
@@ -367,6 +261,8 @@ $(document).ready(function(){
         }        
         if(keyPress == '^' || keyPress == '_' || keyPress == '='){
             //Double Accidental with octave modifier
+            //TO DO!!!
+            //will have to do some more recursive calculations here to test for multiple octave modifiers
             if(nextChar == keyPress && threeCharsAhead == ',' || threeCharsAhead == '\''){
                 $(this).play(keyPress + nextChar + charAfterNext + threeCharsAhead);
             //Double Accidental without octave modifier
@@ -411,23 +307,21 @@ $(document).ready(function(){
                     $(this).play(charBeforeLast + lastChar + keyPress);
                 } 
             //multiple octave modifiers are used    
-            }else if(lastChar == ',' || lastChar == '\'') {                 
-                
-                //test backwards for accidentals 
-                if(sixCharsAgo == '^' || sixCharsAgo == '_' || sixCharsAgo == '='){
-                    doubleAccidentalSevenCharsAgo();//returns true if playback is executed
+            }else if(lastChar == ',' || lastChar == '\'') {     
+
+                if(charBeforeLast.match(letters)){                    
+                    $(this).play(letterCharBeforeLast());                    
                 }else 
-                if(fiveCharsAgo == '^' || fiveCharsAgo == '_' || fiveCharsAgo == '='){ 
-                    doubleAccidentalSixCharsAgo();//returns true if playback is executed
-                }else 
-                if(fourCharsAgo == '^' || fourCharsAgo == '_' || fourCharsAgo == '='){
-                    //alert("fourCharsAgo");
-                    doubleAccidentalFiveCharsAgo();//returns true if playback is executed
-                }else 
-                if(threeCharsAgo == '^' || threeCharsAgo == '_' || threeCharsAgo == '=') {                    
-                    doubleAccidentalFourCharsAgo();//returns true if playback is executed
+                if(threeCharsAgo.match(letters)){
+                    $(this).play(letterThreeCharsAgo());
                 }else
-                //no accidentals were found 
+                if(fourCharsAgo.match(letters)){
+                    $(this).play(letterFourCharsAgo());
+                }else
+                if(fiveCharsAgo.match(letters)){
+                    $(this).play(letterFiveCharsAgo());
+                }else
+                //no letters or accidentals were found 
                 if(fiveCharsAgo == ',' || fiveCharsAgo == '\''){
                     $(this).play(sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
                 }else

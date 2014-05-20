@@ -97,68 +97,40 @@ $(document).ready(function(){
         //two or more letters between the current character and an accidental invalidates the accidental
         //calls play() directly
         function letterFiveCharsAgo(){
-            if(fiveCharsAgo.match(letters)) {                
-                if(sixCharsAgo == '^' || sixCharsAgo == '_' || sixCharsAgo == '=') {                    
-                    if(sevenCharsAgo == sixCharsAgo) {                        
-                        output = sevenCharsAgo + sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                    }else {                        
-                        output = sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                    }                                
-                }else {                    
-                    output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                }
-                return output;
-            }else {
-                return false;
-            }
+            var output = '';              
+            if(sixCharsAgo == '^' || sixCharsAgo == '_' || sixCharsAgo == '=') {                    
+                return(doubleAccidentalSixCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo, fiveCharsAgo, sixCharsAgo, sevenCharsAgo));                                                          
+            }else {                    
+                output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
+                return output; 
+            }                           
         }
-        function letterFourCharsAgo(){
-            if(fourCharsAgo.match(letters)) {                
-                if(fiveCharsAgo == '^' || fiveCharsAgo == '_' || fiveCharsAgo == '=') {                    
-                    if(sixCharsAgo == fiveCharsAgo) {                        
-                        output = sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                    }else {                        
-                        output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                    }                                
-                }else {                    
-                    output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                }
+        function letterFourCharsAgo(){  
+            var output = '';                         
+            if(fiveCharsAgo == '^' || fiveCharsAgo == '_' || fiveCharsAgo == '=') {                    
+                return(doubleAccidentalSixCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo, fiveCharsAgo, sixCharsAgo));                             
+            }else {                    
+                output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                 return output;
-            }else {
-                return false;
-            }
+            }  
         }
         function letterThreeCharsAgo(){
-            var output = '';
-            if(threeCharsAgo.match(letters)) {
-                if(fourCharsAgo == '^' || fourCharsAgo == '_' || fourCharsAgo == '=') {                    
-                    if(fiveCharsAgo == fourCharsAgo) {                        
-                        output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                    }else {
-                        output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;                                               
-                    }                                
-                }else {
-                    output = threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                }
-                return output;
+            var output = '';            
+            if(fourCharsAgo == '^' || fourCharsAgo == '_' || fourCharsAgo == '=') {                    
+                return(doubleAccidentalFiveCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo, fiveCharsAgo));                       
             }else {
-                return false;
-            }
+                output = threeCharsAgo + charBeforeLast + lastChar + keyPress;
+                return output;
+            }    
         }
         function letterCharBeforeLast() {
-            var output = '';
-            
+            var output = '';            
             if(threeCharsAgo == '^' || threeCharsAgo == '_' || threeCharsAgo == '='){
-                if(fourCharsAgo == threeCharsAgo) {
-                    output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;                    
-                }else {
-                    output = threeCharsAgo + charBeforeLast + lastChar + keyPress;                    
-                }    
+                return(doubleAccidentalFourCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo));               
             }else {
                 output = charBeforeLast + lastChar + keyPress;                
                 return output;
-            }
-            return output;            
+            }                    
         }
         
         //test backwards for accidentals 
@@ -170,9 +142,7 @@ $(document).ready(function(){
             }else{
                 output = sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                 return output; 
-            }
-            
-                        
+            }    
         }
         
         function doubleAccidentalSixCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo, fiveCharsAgo, sixCharsAgo){            
@@ -209,8 +179,7 @@ $(document).ready(function(){
             }else {
                 output = threeCharsAgo + charBeforeLast + lastChar + keyPress;
                 return output;
-            } 
-                                              
+            }                                
         }
         function doubleAccidentalThreeCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo){            
             var output = '';
@@ -235,26 +204,25 @@ $(document).ready(function(){
                 /*if(arg8 !== void 0){
                     return(functionToExecute(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
                 }else*/ // * not implmented *
-                if(arg7 !== void 0){
-                    return(functionToExecute(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7));
-                }else if(arg6 !== void 0){
-                    return(functionToExecute(arg0, arg1, arg2, arg3, arg4, arg5, arg6));
-                }else if(arg5 !== void 0){
-                    return(functionToExecute(arg0, arg1, arg2, arg3, arg4, arg5));
-                }else if(arg4 !== void 0){
-                    return(functionToExecute(arg0, arg1, arg2, arg3, arg4));
-                }else if (arg3 !== void 0){
-                    return(functionToExecute(arg0, arg1, arg2, arg3));
-                }else if (arg2 !== void 0){
-                    return(functionToExecute(arg0, arg1, arg2));
-                }else if (arg1 !== void 0){
-                    return(functionToExecute(arg0, arg1));
-                }else if(arg0 !== void 0){
-                    return(functionToExecute(arg0));
-                }else {
-                    return(functionToExecute());
+                if(functionToExecute !== void 0){
+                    if(arg7 !== void 0){
+                        return(functionToExecute(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7));
+                    }else if(arg6 !== void 0){
+                        return(functionToExecute(arg0, arg1, arg2, arg3, arg4, arg5, arg6));
+                    }else if(arg5 !== void 0){
+                        return(functionToExecute(arg0, arg1, arg2, arg3, arg4, arg5));
+                    }else if(arg4 !== void 0){
+                        if(functionToExecute(arg0, arg1, arg2, arg3, arg4)){
+                            return(functionToExecute(arg0, arg1, arg2, arg3, arg4));
+                        }
+                    }else if (arg3 !== void 0){
+                        return(functionToExecute(arg0, arg1, arg2, arg3));
+                    }else if (arg2 !== void 0){
+                        return(functionToExecute(arg0, arg1, arg2));
+                    }else if (arg1 !== void 0){
+                        return(functionToExecute(arg0, arg1));
+                    }
                 }
-
             }else {
                 return false
             }           
@@ -310,7 +278,8 @@ $(document).ready(function(){
             }else if(lastChar == ',' || lastChar == '\'') {     
 
                 if(charBeforeLast.match(letters)){                    
-                    $(this).play(letterCharBeforeLast());                    
+                    //$(this).play(letterCharsAgo("charBeforeLast", keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo));   
+                    $(this).play(letterCharBeforeLast());                 
                 }else 
                 if(threeCharsAgo.match(letters)){
                     $(this).play(letterThreeCharsAgo());

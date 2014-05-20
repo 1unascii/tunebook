@@ -99,7 +99,7 @@ $(document).ready(function(){
         function letterFiveCharsAgo(){
             var output = '';              
             if(sixCharsAgo == '^' || sixCharsAgo == '_' || sixCharsAgo == '=') {                    
-                return(doubleAccidentalSixCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo, fiveCharsAgo, sixCharsAgo, sevenCharsAgo));                                                          
+                return(doubleAccidentalCharsAgo(chars));                                                          
             }else {                    
                 output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                 return output; 
@@ -108,34 +108,63 @@ $(document).ready(function(){
         function letterFourCharsAgo(){  
             var output = '';                         
             if(fiveCharsAgo == '^' || fiveCharsAgo == '_' || fiveCharsAgo == '=') {                    
-                return(doubleAccidentalSixCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo, fiveCharsAgo, sixCharsAgo));                             
+                return(doubleAccidentalCharsAgo(chars));                             
             }else {                    
                 output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                 return output;
             }  
         }
-        function letterThreeCharsAgo(){
+        function letterThreeCharsAgo(chars){
             var output = '';            
             if(fourCharsAgo == '^' || fourCharsAgo == '_' || fourCharsAgo == '=') {                    
-                return(doubleAccidentalFiveCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo, fiveCharsAgo));                       
+                return(doubleAccidentalCharsAgo(chars));                       
             }else {
                 output = threeCharsAgo + charBeforeLast + lastChar + keyPress;
                 return output;
             }    
         }
-        function letterCharBeforeLast() {
+        function letterCharBeforeLast(chars) {
             var output = '';            
             if(threeCharsAgo == '^' || threeCharsAgo == '_' || threeCharsAgo == '='){
-                return(doubleAccidentalFourCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo));               
+                //var chars = [ fourCharsAgo, threeCharsAgo, charBeforeLast, lastChar, keyPress ];
+                return(doubleAccidentalCharsAgo(chars));               
             }else {
                 output = charBeforeLast + lastChar + keyPress;                
                 return output;
-            }                    
+            }                          
         }
-        
+        function accidentalCharsAgo(chars) {
+            output = '';
+            if(accidentalCharsAgo(chars[1])){
+                return(doubleAccidentalCharsAgo(chars));  
+            }else {
+                for(var i = 0; i < chars.length; i++){               
+                    if(i > 1){
+                        output += chars[i];
+                    }
+                }
+                return output;
+            }            
+        }
+
+        //tests for a double accidental and appends it to the output if it exists
+        function doubleAccidentalCharsAgo(chars) {
+            output = '';
+            //var i = 0
+            for(var i = 0; i < chars.length; i++) {           
+                if(i == 0) {                    
+                    if(chars[0] == chars[1]) {
+                        output += chars[0];
+                    }
+                }else {
+                    output += chars[i];
+                }                
+            }            
+            return output;
+        }
         //test backwards for accidentals 
         function doubleAccidentalSevenCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo, fiveCharsAgo, sixCharsAgo, sevenCharsAgo){            
-            
+            var output = '';
             if(sevenCharsAgo == sixCharsAgo) {  
                 output = sevenCharsAgo + sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
                 return output;
@@ -193,40 +222,15 @@ $(document).ready(function(){
                                               
         }
         
-        //tests for an accidental the specified number of Characters Ago (charsAgo) e.g. fourCharsAgo
-                                            //functiontToExecute is a function that tests for a double accidental
-                                            //e.g. doubleAccidentalFiveCharsAgo 
-                                                                //switchArg will be a string like "sevenCharsAgo" *not implemented but the parameter is still required if params are used (hint! -- use any string, but preferably something that makes sense like name of the last parameter)
-                                                                            //arg0 should be the keyPress, 
-                                                                                //arg1 lastChar etc. //all 'arg' arguments should be strings
-        function accidentalCharsAgo(charsAgo, functionToExecute, switchArg, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7){
+        //tests for an accidental the specified number of Characters Ago (charsAgo) e.g. fourCharsAgo                                            /
+        function accidentalCharsAgo(charsAgo){
             if(charsAgo == '^' || charsAgo == '_' || charsAgo == '='){                
-                /*if(arg8 !== void 0){
-                    return(functionToExecute(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
-                }else*/ // * not implmented *
-                if(functionToExecute !== void 0){
-                    if(arg7 !== void 0){
-                        return(functionToExecute(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7));
-                    }else if(arg6 !== void 0){
-                        return(functionToExecute(arg0, arg1, arg2, arg3, arg4, arg5, arg6));
-                    }else if(arg5 !== void 0){
-                        return(functionToExecute(arg0, arg1, arg2, arg3, arg4, arg5));
-                    }else if(arg4 !== void 0){
-                        if(functionToExecute(arg0, arg1, arg2, arg3, arg4)){
-                            return(functionToExecute(arg0, arg1, arg2, arg3, arg4));
-                        }
-                    }else if (arg3 !== void 0){
-                        return(functionToExecute(arg0, arg1, arg2, arg3));
-                    }else if (arg2 !== void 0){
-                        return(functionToExecute(arg0, arg1, arg2));
-                    }else if (arg1 !== void 0){
-                        return(functionToExecute(arg0, arg1));
-                    }
-                }
+                return true;
             }else {
-                return false
+                return false;
             }           
-        }        
+        }   
+
         if(keyPress == '^' || keyPress == '_' || keyPress == '='){
             //Double Accidental with octave modifier
             //TO DO!!!
@@ -276,13 +280,14 @@ $(document).ready(function(){
                 } 
             //multiple octave modifiers are used    
             }else if(lastChar == ',' || lastChar == '\'') {     
-
+                var chars = [ fourCharsAgo, threeCharsAgo, charBeforeLast, lastChar, keyPress ];
                 if(charBeforeLast.match(letters)){                    
                     //$(this).play(letterCharsAgo("charBeforeLast", keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo));   
-                    $(this).play(letterCharBeforeLast());                 
+                    $(this).play(letterCharBeforeLast(chars));                 
                 }else 
                 if(threeCharsAgo.match(letters)){
-                    $(this).play(letterThreeCharsAgo());
+                    chars.unshift(fiveCharsAgo);
+                    $(this).play(letterThreeCharsAgo(chars));
                 }else
                 if(fourCharsAgo.match(letters)){
                     $(this).play(letterFourCharsAgo());

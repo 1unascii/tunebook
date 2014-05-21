@@ -3,6 +3,11 @@ $(document).ready(function(){
     //var available_notes = new Array("C,", "D,", "E,", "F,", "G,", "A,", "B,", "C", "D", "E", "F", "G", "A", "B", "c", "d", "e", "f", "g", "a", "b", "c'", "d'", "e'", "f'", "g'", "a'", "b'");
     var sharps = new Array("F", "f");
     var flats = new Array("B", "b"); 
+    var nineCharsAgo = '';
+    var eightCharsAgo = '';
+    var sevenCharsAgo = '';
+    var sixCharsAgo = '';
+    var fiveCharsAgo = '';
     var fourCharsAgo = '';   
     var threeCharsAgo = '';
     var charBeforeLast = '';
@@ -36,7 +41,8 @@ $(document).ready(function(){
     function findSurroundingChars() {
         var selector = document.getElementById("abc");
         var caretPos = GetCaretPosition(selector);
-        eightCharsAgo = returnChar(selector.value, caretPos -6, caretPos -7);//eight chars back
+        nineCharsAgo = returnChar(selector.value, caretPos -9, caretPos -8);//nine chars back
+        eightCharsAgo = returnChar(selector.value, caretPos -8, caretPos -7);//eight chars back
         sevenCharsAgo = returnChar(selector.value, caretPos -7, caretPos -6);//seven chars back
         sixCharsAgo = returnChar(selector.value, caretPos -6, caretPos -5);//six chars back
         fiveCharsAgo = returnChar(selector.value, caretPos -5, caretPos -4);//five chars back
@@ -84,143 +90,63 @@ $(document).ready(function(){
 
     //play the notes as they are pressed
     //function keyPress();
-    $('#abc').on('keypress', function(event){
-        
+    $('#abc').on('keypress', function(event){        
 
 
-        findSurroundingChars();
-        var charsBehindKeyPress = [keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo, fiveCharsAgo, sixCharsAgo, sevenCharsAgo];
+        findSurroundingChars();        
         key = $('#key').val();        
         var c = event.which;//character code        
         var keyPress = String.fromCharCode(c);//convert it to a string
 
-        //two or more letters between the current character and an accidental invalidates the accidental
-        //calls play() directly
-        function letterFiveCharsAgo(){
-            var output = '';              
-            if(sixCharsAgo == '^' || sixCharsAgo == '_' || sixCharsAgo == '=') {                    
-                return(doubleAccidentalCharsAgo(chars));                                                          
-            }else {                    
-                output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                return output; 
-            }                           
-        }
-        function letterFourCharsAgo(){  
-            var output = '';                         
-            if(fiveCharsAgo == '^' || fiveCharsAgo == '_' || fiveCharsAgo == '=') {                    
-                return(doubleAccidentalCharsAgo(chars));                             
-            }else {                    
-                output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                return output;
-            }  
-        }
-        function letterThreeCharsAgo(chars){
-            var output = '';            
-            if(fourCharsAgo == '^' || fourCharsAgo == '_' || fourCharsAgo == '=') {                    
-                return(doubleAccidentalCharsAgo(chars));                       
-            }else {
-                output = threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                return output;
-            }    
-        }
-        function letterCharBeforeLast(chars) {
-            var output = '';            
-            if(threeCharsAgo == '^' || threeCharsAgo == '_' || threeCharsAgo == '='){
-                //var chars = [ fourCharsAgo, threeCharsAgo, charBeforeLast, lastChar, keyPress ];
-                return(doubleAccidentalCharsAgo(chars));               
-            }else {
-                output = charBeforeLast + lastChar + keyPress;                
-                return output;
-            }                          
-        }
-        function accidentalCharsAgo(chars) {
+        //letterCharsAgo is only called after a character match is found to be true
+        //it recieves a special character array which are the characters which 
+        //must be parsed in this instance
+        function letterCharsAgo(chars) {
             output = '';
+            // second character is one behind the found letter
+            //so when it is an accidental
             if(accidentalCharsAgo(chars[1])){
+                //pass along to test if it's a double
                 return(doubleAccidentalCharsAgo(chars));  
             }else {
+                //no accidental was found
+                //output will include everything but the last two characters (our suspected accidental notes)
                 for(var i = 0; i < chars.length; i++){               
                     if(i > 1){
                         output += chars[i];
                     }
                 }
-                return output;
+                if(output.length){
+                    return output;
+                }else {
+                    return false;
+                }
             }            
         }
 
         //tests for a double accidental and appends it to the output if it exists
+        //always called by letterCharsAgo
         function doubleAccidentalCharsAgo(chars) {
             output = '';
             //var i = 0
-            for(var i = 0; i < chars.length; i++) {           
-                if(i == 0) {                    
+            for(var i = 0; i < chars.length; i++) { 
+                //if the first char is an accidental         
+                if(i == 0) {  
+                    //if the second char is the same accidental              
                     if(chars[0] == chars[1]) {
                         output += chars[0];
                     }
                 }else {
+                    //everything but the first char
                     output += chars[i];
                 }                
             }            
-            return output;
-        }
-        //test backwards for accidentals 
-        function doubleAccidentalSevenCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo, fiveCharsAgo, sixCharsAgo, sevenCharsAgo){            
-            var output = '';
-            if(sevenCharsAgo == sixCharsAgo) {  
-                output = sevenCharsAgo + sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
+            if(output.length){
                 return output;
-            }else{
-                output = sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                return output; 
-            }    
-        }
-        
-        function doubleAccidentalSixCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo, fiveCharsAgo, sixCharsAgo){            
-            var output = '';
-            if(sixCharsAgo == fiveCharsAgo) {
-                output = sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                return output;
-                
-            }else{                
-                output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                return output;
-            }          
-                        
-        }
-        
-        function doubleAccidentalFiveCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo, fiveCharsAgo){            
-            var output = '';
-            if(fiveCharsAgo == fourCharsAgo) {
-                output = fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                return output;
-            //e.g...  //__B,,    //_B,,     //__B,
-            }else{                
-                output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                return output;
+            }else {
+                return false;
             }
-                                     
-        }
-        
-        function doubleAccidentalFourCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo){            
-            var output = '';
-            if(fourCharsAgo == threeCharsAgo) {
-                output = fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                return output; 
-            }else {
-                output = threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                return output;
-            }                                
-        }
-        function doubleAccidentalThreeCharsAgo(keyPress, lastChar, charBeforeLast, threeCharsAgo){            
-            var output = '';
-            if(threeCharsAgo == charBeforeLast) {
-                output = threeCharsAgo + charBeforeLast + lastChar + keyPress;
-                return output; 
-            }else {
-                output = charBeforeLast + lastChar + keyPress;
-                return output;
-            } 
-                                              
-        }
+        }        
         
         //tests for an accidental the specified number of Characters Ago (charsAgo) e.g. fourCharsAgo                                            /
         function accidentalCharsAgo(charsAgo){
@@ -281,37 +207,27 @@ $(document).ready(function(){
             //multiple octave modifiers are used    
             }else if(lastChar == ',' || lastChar == '\'') {     
                 var chars = [ fourCharsAgo, threeCharsAgo, charBeforeLast, lastChar, keyPress ];
+                
                 if(charBeforeLast.match(letters)){                    
-                    //$(this).play(letterCharsAgo("charBeforeLast", keyPress, lastChar, charBeforeLast, threeCharsAgo, fourCharsAgo));   
-                    $(this).play(letterCharBeforeLast(chars));                 
-                }else 
+                    $(this).play(letterCharsAgo(chars));
+                }else
                 if(threeCharsAgo.match(letters)){
                     chars.unshift(fiveCharsAgo);
-                    $(this).play(letterThreeCharsAgo(chars));
+                    $(this).play(letterCharsAgo(chars));
                 }else
                 if(fourCharsAgo.match(letters)){
-                    $(this).play(letterFourCharsAgo());
+                    chars.unshift(sixCharsAgo, fiveCharsAgo);
+                    $(this).play(letterCharsAgo(chars));
                 }else
                 if(fiveCharsAgo.match(letters)){
-                    $(this).play(letterFiveCharsAgo());
-                }else
-                //no letters or accidentals were found 
-                if(fiveCharsAgo == ',' || fiveCharsAgo == '\''){
-                    $(this).play(sixCharsAgo + fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
-                }else
-                if(fourCharsAgo == ',' || fourCharsAgo == '\''){
-                    $(this).play(fiveCharsAgo + fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
-                }else
-                if(threeCharsAgo == ',' || threeCharsAgo == '\''){
-                    $(this).play(fourCharsAgo + threeCharsAgo + charBeforeLast + lastChar + keyPress);
-                }else
-                if(charBeforeLast == ',' || charBeforeLast == '\''){
-                    $(this).play(threeCharsAgo + charBeforeLast + lastChar + keyPress);
-                }else{
-                    $(this).play(charBeforeLast + lastChar + keyPress);
-                }   
-
-                
+                    chars.unshift(sevenCharsAgo, sixCharsAgo, fiveCharsAgo);
+                    $(this).play(letterCharsAgo(chars));
+                }else 
+                if(sixCharsAgo.match(letters)){
+                    chars.unshift(eightCharsAgo, sevenCharsAgo, sixCharsAgo, fiveCharsAgo);
+                    $(this).play(letterCharsAgo(chars));
+                }         
+                                  
             }else { 
                 
                 if(key == "C" || key == "D dorian" || key == "G Mixolydian" || key == "A minor"){    

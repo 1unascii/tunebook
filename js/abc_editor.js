@@ -17,7 +17,17 @@ $(document).ready(function(){
     var threeCharsAhead = '';
     var letters = /^[a-zA-Z]+$/;
     var key = $('#key').val();//what key are we in?
-    
+    sharpsArray = [ ["C","D dorian","G Mixolydian", "A minor"],         ["G", "A dorian", "D Mixolydian", "E minor"],       
+                    ["D", "E dorian", "A Mixolydian", "B minor"],       ["A", "B dorian", "E Mixolydian", "F# minor"],      
+                    ["E", "F# dorian", "B Mixolydian", "C# minor"],     ["B", "C# dorian", "F# Mixolydian", "G# minor"],    
+                    ["F#", "G# dorian", "C# Mixolydian", "D# minor"]];
+    flatsArray  = [ ["C","D dorian","G Mixolydian", "A minor"],         ["F", "G dorian", "C Mixolydian", "D minor"],
+                    ["Bb", "C dorian", "F Mixolydian", "G minor"],      ["Eb", "F dorian", "Bb Mixolydian", "C minor"],
+                    ["Ab", "Bb dorian", "Eb Mixolydian", "F minor"],    ["Db", "Eb dorian", "Ab Mixolydian", "Bb minor"],
+                    ["Gb", "Ab dorian", "Db Mixolydian", "Eb minor"],   ["Cb", "Db dorian", "Gb Mixolydian", "Ab minor"]];
+    var flatsToPush   = [["B", "b"], ["E", "e"], ["A", "a"], ["D", "d"], ["G", "g"], ["C", "c"], ["F", "f"]];
+    var sharpsToPush  = [["F", "f"], ["C", "c"], ["G", "g"], ["D", "d"], ["A", "a"], ["E", "e"], ["B", "b"]];                
+
     function GetCaretPosition(ctrl) {
         var CaretPos = 0;   // IE Support
         if (document.selection) {
@@ -80,8 +90,78 @@ $(document).ready(function(){
             }                                                       
         }        
     }
-    
+    function keySpecificPlayBack(key, accidentalArray, sharpsOrFlats, abcArray, accidentalChar, sharpsOrFlatsToPush){
+        
+        for(var i = 0; i < accidentalArray.length; i++){ 
+            //first and last have special cases //they call functions with null values 
+            //alert(accidentalArray[i]);                   
+            if(i == 0 || i == accidentalArray.length){
+                if(playBack(key, accidentalArray[i], [], abcArray, '')){
+                    return playBack(key, accidentalArray[i], [], abcArray, '');
+                }                                                      
+            }else 
+            if((playBack(key, accidentalArray[i], sharpsOrFlats, abcArray, accidentalChar))){
+                return playBack(key, accidentalArray[i], sharpsOrFlats, abcArray, accidentalChar);
+            }
+            sharpsOrFlats.push(sharpsOrFlatsToPush[i][0], sharpsOrFlatsToPush[i][1]);                         
+        }                    
+    }
    
+   function letterCharsAgo(chars) {
+        var output = '';
+        // second character is one behind the found letter
+        //so when it is an accidental
+        if(accidentalCharsAgo(chars[1])){
+            //pass along to test if it's a double
+            return(doubleAccidentalCharsAgo(chars));  
+        }else {
+            //no accidental was found
+            //output will include everything but the last two characters (our suspected accidental notes)
+            for(var i = 0; i < chars.length; i++){               
+                if(i > 1){
+                    output += chars[i];
+                }
+            }
+            if(output.length){
+                return output;
+            }else {
+                return false;
+            }
+        }            
+    }
+
+    //tests for a double accidental and appends it to the output if it exists
+    //always called by letterCharsAgo
+    function doubleAccidentalCharsAgo(chars) {
+        var output = '';
+        //var i = 0
+        for(var i = 0; i < chars.length; i++) { 
+            //if the first char is an accidental         
+            if(i == 0) {  
+                //if the second char is the same accidental              
+                if(chars[0] == chars[1]) {
+                    output += chars[0];
+                }
+            }else {
+                //everything but the first char
+                output += chars[i];
+            }                
+        }            
+        if(output.length){
+            return output;
+        }else {
+            return false;
+        }
+    }        
+    
+    //tests for an accidental the specified number of Characters Ago (charsAgo) e.g. fourCharsAgo                                            /
+    function accidentalCharsAgo(charsAgo){
+        if(charsAgo == '^' || charsAgo == '_' || charsAgo == '='){                
+            return true;
+        }else {
+            return false;
+        }           
+    }   
 
     $('#abc').on("click", function(){
         findSurroundingChars();
@@ -94,68 +174,14 @@ $(document).ready(function(){
 
 
         findSurroundingChars();        
-        key = $('#key').val();        
+        var key = $('#key').val();        
         var c = event.which;//character code        
         var keyPress = String.fromCharCode(c);//convert it to a string
 
         //letterCharsAgo is only called after a character match is found to be true
         //it recieves a special character array which are the characters which 
         //must be parsed in this instance
-        function letterCharsAgo(chars) {
-            output = '';
-            // second character is one behind the found letter
-            //so when it is an accidental
-            if(accidentalCharsAgo(chars[1])){
-                //pass along to test if it's a double
-                return(doubleAccidentalCharsAgo(chars));  
-            }else {
-                //no accidental was found
-                //output will include everything but the last two characters (our suspected accidental notes)
-                for(var i = 0; i < chars.length; i++){               
-                    if(i > 1){
-                        output += chars[i];
-                    }
-                }
-                if(output.length){
-                    return output;
-                }else {
-                    return false;
-                }
-            }            
-        }
-
-        //tests for a double accidental and appends it to the output if it exists
-        //always called by letterCharsAgo
-        function doubleAccidentalCharsAgo(chars) {
-            output = '';
-            //var i = 0
-            for(var i = 0; i < chars.length; i++) { 
-                //if the first char is an accidental         
-                if(i == 0) {  
-                    //if the second char is the same accidental              
-                    if(chars[0] == chars[1]) {
-                        output += chars[0];
-                    }
-                }else {
-                    //everything but the first char
-                    output += chars[i];
-                }                
-            }            
-            if(output.length){
-                return output;
-            }else {
-                return false;
-            }
-        }        
         
-        //tests for an accidental the specified number of Characters Ago (charsAgo) e.g. fourCharsAgo                                            /
-        function accidentalCharsAgo(charsAgo){
-            if(charsAgo == '^' || charsAgo == '_' || charsAgo == '='){                
-                return true;
-            }else {
-                return false;
-            }           
-        }   
 
         if(keyPress == '^' || keyPress == '_' || keyPress == '='){
             //Double Accidental with octave modifier
@@ -402,20 +428,31 @@ $(document).ready(function(){
     We have to calculate any octave modifications as well as flat notes, sharp notes, double flats and sharps, and the combinations
     of those accidentals or double accidentals with or without octave modifiers
     */
+    //inserts special characters where needed to comply with the key
+    //also scans for triplets specified by the abc standard
     function playBack(key, keys, accidentals, splitArray, modifier){
         var new_abc = '';
+        //testing if the key matches a specified key
         if(key == keys[0] || key == keys[1] || key == keys[2] || key == keys[3]){            
-            for(var i=0; i<splitArray.length; i++){
-                for(var c=0; c<accidentals.length; c++){
+            for(var i = 0; i < splitArray.length; i++){
+                //accidental or octave mod detection
+                for(var c = 0; c < accidentals.length; c++){
                     if(accidentals[c] == splitArray[i] && splitArray[i-1] !== '^' && splitArray[i-1] !== '_' && splitArray[i-1] !== '='){
+                        //accidentals or octave modifiers are being added here
                         splitArray[i] = modifier + splitArray[i];
                     }
                 }
+                //triplet detection
                 if(splitArray[i] == '3' && splitArray[i-1] == '(' ){                    
                     var count = 0;
                     var count2 = 1;
-                    while(count<2){
-                        if(splitArray[i + count2] !== ' ' && splitArray[i + count2] !== '^' && splitArray[i + count2] !== '_' && splitArray[i + count2] !== '=' && splitArray[i + count2] !== ',' && splitArray[i + count2] !== '\'' && splitArray[i + count2] !== '/' && splitArray[i + count2]!== '\'/' && splitArray[i + count2] !== ',/'){                            
+                    while(count < 2){
+                        //triplet detection has it's own accidental detection .... for now
+                        if(splitArray[i + count2] !== ' ' && splitArray[i + count2] !== '^' && splitArray[i + count2] 
+                            !== '_' && splitArray[i + count2] !== '=' && splitArray[i + count2] 
+                            !== ',' && splitArray[i + count2] !== '\'' && splitArray[i + count2] 
+                            !== '/' && splitArray[i + count2] !== '\'/' && splitArray[i + count2] !== ',/')
+                        {                            
                             for(var c=0; c<accidentals.length; c++){
                                 if(accidentals[c] == splitArray[i + count2]){
                                     splitArray[i + count2] = modifier + splitArray[i + count2]; 
@@ -433,10 +470,10 @@ $(document).ready(function(){
                 }
                 new_abc += splitArray[i];
             }             
-            $('#abc').play(new_abc);//jQuery Turtle plugin
+            
             //alert(new_abc);
-            $('#play').fadeOut(250);
-            return true;
+            //$('#play').fadeOut(250);
+            return new_abc;
         }else {
             return false;
         }
@@ -453,49 +490,19 @@ $(document).ready(function(){
         $('#play').on("click", function(){ 
             if(selection){
                 
-                sharps = new Array("F", "f");                
-                flats = new Array("B", "b");
+                sharps = new Array();                
+                flats = new Array();
                 key = $('#key').val();
                 var abc_split = selection.split('');
-                playBack(key, ["C","D dorian","GMixolydian", "A minor"], [], abc_split, '');
-                if(!(playBack(key, ["G","A dorian","D Mixolydian", "E minor"], sharps, abc_split, '^'))){
-                    sharps.push("C", "c");
+
+                
+                if(keySpecificPlayBack(key, sharpsArray, sharps, abc_split, '^', sharpsToPush)){
+                    $('#abc').play(keySpecificPlayBack(key, sharpsArray, sharps, abc_split, '^', sharpsToPush));//jQuery Turtle plugin
+                }else {
+                    $('#abc').play(keySpecificPlayBack(key, flatsArray, flats, abc_split, '_', flatsToPush));                    
                 }
-                if(!(playBack(key, ["D","E dorian","A Mixolydian", "B minor"], sharps, abc_split, '^'))){
-                    sharps.push("G", "g");
-                }
-                if(!(playBack(key, ["A","B dorian","E Mixolydian", "F# minor"], sharps, abc_split, '^'))){
-                    sharps.push("D", "d");
-                }
-                if(!(playBack(key, ["E","F# dorian","B Mixolydian", "C# minor"], sharps, abc_split, '^'))){
-                    sharps.push("A", "a");
-                }
-                if(!(playBack(key, ["B","C# dorian","F# Mixolydian", "G# minor"], sharps, abc_split, '^'))){
-                    sharps.push("E", "e");
-                }
-                if(!(playBack(key, ["F#","G# dorian","C# Mixolydian", "D# minor"], sharps, abc_split, '^'))){
-                    sharps.push("B", "b");
-                }    
-                playBack(key, ["C#","D# dorian","G# Mixolydian", "A# minor"], sharps, abc_split, '^');
-                if(!(playBack(key, ["F","G dorian","C Mixolydian", "D minor"], flats, abc_split, '_'))){
-                    flats.push("E", "e");
-                }
-                if(!(playBack(key, ["Bb","C dorian","F Mixolydian", "G minor"], flats, abc_split, '_'))){
-                    flats.push("A", "a");
-                }
-                if(!(playBack(key, ["Eb","F dorian","Bb Mixolydian", "C minor"], flats, abc_split, '_'))){
-                    flats.push("D", "d");
-                }
-                if(!(playBack(key, ["Ab","Bb dorian","Eb Mixolydian", "F minor"], flats, abc_split, '_'))){
-                    flats.push("G", "g");
-                }    
-                if(!(playBack(key, ["Db","Eb dorian","Ab Mixolydian", "Bb minor"], flats, abc_split, '_'))){
-                    flats.push("C", "c");
-                }    
-                if(!(playBack(key, ["Gb","Ab dorian","Db Mixolydian", "Eb minor"], flats, abc_split, '_'))){
-                    flats.push("F", "f");
-                }    
-                playBack(key, ["Cb","Db dorian","Gb Mixolydian", "Ab minor"], flats, abc_split, '_');
+                                
+                
             }else{
                 alert("unexpected error: selection was not found");
             }
@@ -528,15 +535,11 @@ $(document).ready(function(){
     })  
     
     
-    function start_new_abc(){        
+    function start_new_abc(){      
         
-        var hdr = build_abc_hdr(            
-            $('#tune_title').val(), 
-            $('#tune_type').val(), 
-            $('#metre').val(), 
-            $('#default_note_length').val(), 
-            $('#key').val()            
-        );
+        var hdr_array  = [["X:", 1], ["T:", $('#tune_title').val()], ["R:", $('#tune_type').val()], ["M:", $('#metre').val()], 
+                         ["L:", $('#defaule_note_length').val()], ["K:", $('#key').val()]];
+        var hdr = build_abc_hdr(hdr_array);
         
         abc_editor = new ABCJS.Editor("abc", { canvas_id: "canvas", midi_id:"midi", warnings_id:"warnings" });
         
@@ -678,24 +681,16 @@ $(document).ready(function(){
               }
           );          
     })
-    function build_abc_hdr(title, type, metre, length, key){
-    
-        var hdr = "X:1\n";
-        if(title){
-            hdr += "T:" + title + "\n";            
+    /*
+        var headers = [["X:", 1], ["T:", title], ["R:", type], ["M:", metre], ["L:", length], ["K:", key]];
+    */
+    function build_abc_hdr(headers){
+        var hdr = headers[0][0] + [0][1];
+        for(i = 0; i < headers.length; i++){
+            if(headers[i].length){
+                hdr += headers[i][0] + headers[i][1] + "\n";
+            }            
         }
-        if(type){
-            hdr += "R:" + type + "\n";
-        }
-        if(metre){
-            hdr += "M:" + metre + "\n";
-        }
-        if(length){
-            hdr += "L:" + length + "\n";
-        }
-        if(key){
-            hdr += "K:" + key + "\n";
-        }                
         return hdr;
     }
     

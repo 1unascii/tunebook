@@ -1,3 +1,4 @@
+<link href="css/links.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="js/links.js"></script>
 <div id='add_tune_link'>New Tune</div>
 <?php

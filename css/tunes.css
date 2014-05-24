@@ -1,0 +1,15 @@
+a, img                      {
+                            padding-right: 10px;
+                            cursor: pointer;
+                            padding-left: 1px;                            
+                            }
+#tunes_info, #tunes_filter  {
+                            padding-top: 10px;
+                            padding-bottom: 10px;
+                            padding-right: 10px;
+                            padding-left: 1px;
+                            }
+label                       {
+                            width: 200px;
+                            }
+

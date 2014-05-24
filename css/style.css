@@ -20,21 +20,41 @@ label                       {
                             display: inline-block;
                             width: 150px;
                             }
-form#form_for_new_tune      {
-                            width: 400px;       
-                            float: left;
+td, th, body                {
+                            padding-left: 10px;
+                            padding-right: 10px;
                             }
+
+#content                    {
+                            padding: 10px;
+                            }
+
 #warning_canvas_wrapper     {
-                            width: 600px;
-                            height: 700px;
+
+
                             float: left;
-                            }
-footer                      {
-                            display: inline-block;
-                            height: 5%;
-                            width: 100%;        
-                            }
-#warnings                   {
-                            /*padding-top: 100px;*/
-                            font-family: monospace;
-                            }
+}
+footer                          {
+                            width: 100%;
+                            height: 80px;
+                            bottom: 0;
+                            left: 0;
+                            clear: both;
+}
+#form_for_new_tune           {
+                            width: 425px;
+                            float:left;
+}
+#add_tune_link, 
+#login_link, 
+#register_link, 
+#logout_link, 
+#home_link                              {
+                                        display: inline-block;
+                                        margin-right: 10px;
+                                        margin-bottom: 5px;
+                                        cursor: pointer;
+                                        }
+#home_link                              {
+                                        padding-left: 1px;
+                                        }   

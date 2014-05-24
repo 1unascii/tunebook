@@ -535,13 +535,15 @@ $(document).ready(function(){
     })  
     
     
+
+    
     function start_new_abc(){      
         
         var hdr_array  = [["X:", 1], ["T:", $('#tune_title').val()], ["R:", $('#tune_type').val()], ["M:", $('#metre').val()], 
                          ["L:", $('#defaule_note_length').val()], ["K:", $('#key').val()]];
         var hdr = build_abc_hdr(hdr_array);
         
-        abc_editor = new ABCJS.Editor("abc", { canvas_id: "canvas", midi_id:"midi", warnings_id:"warnings" });
+        abc_editor = new ABCJS.Editor("abc", { canvas_id: "canvas", midi_id:"midi", warnings_id:"warnings"});
         
         window.ABCJS.edit.EditArea.prototype.getString = function() {
             return hdr + this.textarea.value;
@@ -626,7 +628,7 @@ $(document).ready(function(){
     }, 1000);    
     $('#tune_title').on('change keyup', function(){
          start_new_abc();
-    })
+    });
     $('#tune_type').on("change", function(){
         if($(this).val() == "Add another"){
             //for some reason the width needs an extra 5 pixels to line up...
@@ -637,7 +639,7 @@ $(document).ready(function(){
             start_new_abc();
         }    
         
-    })
+    });
     $('#metre').change(function(){
         start_new_abc();
     })
@@ -655,7 +657,7 @@ $(document).ready(function(){
             $('#play').remove();
             //selection == '';
         }
-    })
+    });
     $('#save').on('click', function(){
         var tune_body = $('#abc').val().replace(/\n/g, '<br />');
         $.post(

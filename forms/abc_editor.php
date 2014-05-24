@@ -8,7 +8,7 @@
 <script src="js/abcjs_editor_1.7-min.js" type="text/javascript"></script>
 <script src="js/jquery-turtle.js" type="text/javascript"></script> 
 
-
+<div id="form_wrapper">
 <!--FORM BEGINS-->
 <form id="form_for_new_tune">
 
@@ -108,12 +108,18 @@
     if($_SESSION['Authenticated']){                
        echo '<input type="button" value="save" id="save"/>';                
     }
-?>            
+?>       
 
 </form>
+
+
+</div> 
+
+<div id="canvas_wrapper">   
 <div id="warning_canvas_wrapper">
     <div id="canvas" ></div>
     <div id="warnings">
+</div>
 </div>
 <!--div id="midi"></div-->
 <!--div id="warnings"></div-->

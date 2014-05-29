@@ -4,7 +4,9 @@
     include_once('../functions.php');
     //include_once('../links.php');
 ?>
+
 <script type="text/javascript" src="js/abc_editor.js"></script>
+<script src="js/functions.js" type="text/javascript"></script> 
 <script src="js/abcjs_editor_1.7-min.js" type="text/javascript"></script>
 <script src="js/jquery-turtle.js" type="text/javascript"></script> 
 

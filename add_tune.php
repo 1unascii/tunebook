@@ -21,7 +21,7 @@ include_once('connect.php');
     
     if(insertQuery($query,  $params)){
         echo 'Thank you. Your tune was submitted';
-        echo $tune_type_id;
+        //echo $tune_type_id;
     }else{
         echo 'There was an error with your tune submission';
     }

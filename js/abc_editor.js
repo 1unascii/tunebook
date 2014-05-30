@@ -70,7 +70,7 @@ $(document).ready(function(){
         sixCharsAhead = returnChar(selector.value, caretPos +5, caretPos +6);//six chars ahead
     }
     
-    //octave is a boolean
+    //octave is a boolean //arg 1 => sharps, arg 2 => '^', arg 3 => keyPress, arg 4 => boolean
     function accidentalNotes(accidentals, modifierString, keyPress, octave){
         var accidental = false;
         for(var i=0; i<accidentals.length; i++){
@@ -108,8 +108,18 @@ $(document).ready(function(){
             sharpsOrFlats.push(sharpsOrFlatsToPush[i][0], sharpsOrFlatsToPush[i][1]);
         }
     }
-   
-   function letterCharsAgo(chars) {
+   function playKeysExtraCharacters(key, keys, sharpsOrFlats, toPush, symbol, keyPress, boolOfFalse){
+        for(var i=1; i<keys.length; i++){
+            if(!playKey(key, keys[i], [sharpsOrFlats, symbol, keyPress])){
+                sharpsOrFlats.push(toPush[i][0], toPush[i][1]);
+            } else{
+                i = keys.length;
+                return true;
+            }
+        }
+        return false;
+    }
+   function letterCharsAgo(chars, key) {
         var output = '';
         // second character is one behind the found letter
         //so when it is an accidental
@@ -119,16 +129,22 @@ $(document).ready(function(){
         }else {
             //no accidental was found
             //output will include everything but the last two characters (our suspected accidental notes)
-            for(var i = 0; i < chars.length; i++){
-                if(i > 1){
-                    output += chars[i];
+//TO DO handle for keys
+            if(key !== void 0){
+
+            }else{//no key specified
+                //ars[0] = accidentalNotes()
+                for(var i = 0; i < chars.length; i++){
+                    if(i > 1){
+                        output += chars[i];
+                    }
                 }
-            }
-            if(output.length){
-                return output;
-            }else {
-                return false;
-            }
+                if(output.length){
+                    return output;
+                }else {
+                    return false;
+                }
+            }//no key specified
         }
     }
 
@@ -164,14 +180,20 @@ $(document).ready(function(){
             return false;
         }
     }
+
     function playKey(key, keys, args){
         if(key == keys[0] || key == keys[1] || key == keys[2] || key == keys[3]){
-            $(this).play(accidentalNotes(args[0], args[1], args[2], args[3]));
+            if(args[3].length){
+                $(this).play(accidentalNotes(args[0], args[1], args[2], args[3]));
+            }else {
+                $(this).play(accidentalNotes(args[0], args[1], args[2]));
+            }
             return true;
         }else{
             return false
         }   
     }
+
     function playSharpKeys(key, keys){
         for(var i=1; i<keys.length; i++){
             if(!playKey(key, keys[i], [sharps, '^', keyPress, true])){
@@ -183,6 +205,7 @@ $(document).ready(function(){
         }
         return false;
     }
+
     function playKeysWithMod(key, keys, sharpsOrFlats, toPush, symbol, keyPress, boolOfTrue){
         for(var i=1; i<keys.length; i++){
             if(!playKey(key, keys[i], [sharpsOrFlats, symbol, keyPress, boolOfTrue])){
@@ -194,6 +217,7 @@ $(document).ready(function(){
         }
         return false;
     }
+
     function playKeys(key, keys, sharpsOrFlats, toPush, symbol, keyPress, boolOfFalse){
         for(var i=1; i<keys.length; i++){
             if(!playKey(key, keys[i], [sharpsOrFlats, symbol, keyPress])){
@@ -205,6 +229,7 @@ $(document).ready(function(){
         }
         return false;
     }
+
 
     $('#abc').on("click", function(){
         findSurroundingChars();
@@ -221,15 +246,9 @@ $(document).ready(function(){
         var c = event.which;//character code
         var keyPress = String.fromCharCode(c);//convert it to a string
 
-        //letterCharsAgo is only called after a character match is found to be true
-        //it recieves a special character array which are the characters which
-        //must be parsed in this instance
-        
-
         if(keyPress == '^' || keyPress == '_' || keyPress == '='){
             //Double Accidental with octave modifier
-            //TO DO!!!
-            //will have to do some more recursive calculations here to test for multiple octave modifiers
+//TO DO!!! //will have to do some more recursive calculations here to test for multiple octave modifiers
             if(nextChar == keyPress && threeCharsAhead == ',' || threeCharsAhead == '\''){
                 $(this).play(keyPress + nextChar + charAfterNext + threeCharsAhead);
             //Double Accidental without octave modifier
@@ -243,6 +262,7 @@ $(document).ready(function(){
                 $(this).play(lastChar + keyPress + nextChar)
             //Accidental added before a letter with octave modifier
             }else if(nextChar.match(letters) && charAfterNext == ',' || charAfterNext =='\''){
+//TO DO Test for multiple modifiers
                 $(this).play(keyPress + nextChar + charAfterNext);
             // "" "" without octave modifier
             }else if(nextChar.match(letters)){
@@ -257,10 +277,7 @@ $(document).ready(function(){
             }
         }else
         if(keyPress == ',' || keyPress =='\''){
-            //sharps = [];
-            //sharps.push("F", "f");
-            //flats = [];
-            //flats.push("B", "b");
+
             if(charBeforeLast == '^' || charBeforeLast == '_' || charBeforeLast == '='){//if the user modified the note
                 
                 if(threeCharsAgo == charBeforeLast){//just how modified is this note anyway?
@@ -315,8 +332,8 @@ $(document).ready(function(){
                 $(this).play(keyPress);
             }else
             //Sharp keys
-            if(!playKeysWithMod(key, sharpsArray, ["F", "f"], sharpsToPush, '^', keyPress, false)){
-                playKeysWithMod(key, flatsArray, ["B", "b"], flatsToPush, '_', keyPress, false)
+            if(!playKeys(key, sharpsArray, ["F", "f"], sharpsToPush, '^', keyPress, false)){
+                playKeys(key, flatsArray, ["B", "b"], flatsToPush, '_', keyPress, false)
             }
             
         }
@@ -337,14 +354,7 @@ $(document).ready(function(){
             return false;
         }
     }
-    
-    /*
-This function uses the jQuery Turtle plugin. This is a plugin designed for writing basic games
-This function uses the "play" method to play notes. The play method uses abc notation but it doesn't account for keys.
-Also because we are doing dynamic playback as the user enters characters of abc code into the textbox
-We have to calculate any octave modifications as well as flat notes, sharp notes, double flats and sharps, and the combinations
-of those accidentals or double accidentals with or without octave modifiers
-*/
+
     //inserts special characters where needed to comply with the key
     //also scans for triplets specified by the abc standard
     function playBack(key, keys, accidentals, splitArray, modifier){
@@ -386,15 +396,14 @@ of those accidentals or double accidentals with or without octave modifiers
                     }
                 }
                 new_abc += splitArray[i];
-            }
-            
-            //alert(new_abc);
+            }            
             $('#play').fadeOut(250);
             return new_abc;
         }else {
             return false;
         }
     }
+
     $('#abc').on('select keyup', function(){
         
         key = $('#key').val();
@@ -426,9 +435,6 @@ of those accidentals or double accidentals with or without octave modifiers
         })
     })
     
-    
-    
-    
     $('#tune_mode_input').change(function(){
         var id = $(this).find("option:selected").attr("id");
         switch (id){
@@ -450,10 +456,7 @@ of those accidentals or double accidentals with or without octave modifiers
         }
         start_new_abc();
     })
-    
-    
 
-    
     function start_new_abc(){
         
         var hdr_array = [["X:", 1], ["T:", $('#tune_title').val()], ["R:", $('#tune_type').val()], ["M:", $('#metre').val()],

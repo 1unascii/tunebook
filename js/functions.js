@@ -37,6 +37,26 @@ $(document).ready(function(){
             sharpsOrFlats.push(sharpsOrFlatsToPush[i][0], sharpsOrFlatsToPush[i][1]);
         }
     }
+    function autoPlayByKey(key, keys, args, sharpsOrFlats, sharpsOrFlatsToPush){
+         for(var i = 0; i < keys.length; i++){  
+            //first and last have special cases //they call functions with null values 
+            //alert(accidentalArray[i]);                   
+            if( keys[i][0] == "C" && keys[i+1][0] !== "F" ){
+                for(var c = 0; c < keys[i].length; i++){
+                    if( key == keys[i][c] ) {
+                        return( args[1] + args[0] ); //should be lastChar and keyPress
+                    }
+                }                                                 
+            }else { 
+                for(var d = 0; d < keys[i].length; i++){
+                    if( key == keys[i][d] ) {
+                        return( $.accidentalNotes( sharpsOrFlats, accidentalChar, args[0], args[2] ) );
+                    }
+                } 
+            }  
+            sharpsOrFlats.push( sharpsOrFlatsToPush[i][0], sharpsOrFlatsToPush[i][1] );                         
+        }               
+    }
    
     $.letterCharsAgo = function(chars) {
         var output = '';
@@ -183,4 +203,5 @@ $(document).ready(function(){
         }
         return hdr;
     }
+
 })

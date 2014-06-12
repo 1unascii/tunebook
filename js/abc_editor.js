@@ -1,6 +1,6 @@
 $(document).ready(function(){
     var abc = false;
-    var editor 
+    var editor
     var selection = '';//for playing selections
     //var available_notes = new Array("C,", "D,", "E,", "F,", "G,", "A,", "B,", "C", "D", "E", "F", "G", "A", "B", "c", "d", "e", "f", "g", "a", "b", "c'", "d'", "e'", "f'", "g'", "a'", "b'");
     var sharps = new Array();
@@ -27,8 +27,8 @@ $(document).ready(function(){
                     ["Bb", "C dorian", "F Mixolydian", "G minor"], ["Eb", "F dorian", "Bb Mixolydian", "C minor"],
                     ["Ab", "Bb dorian", "Eb Mixolydian", "F minor"], ["Db", "Eb dorian", "Ab Mixolydian", "Bb minor"],
                     ["Gb", "Ab dorian", "Db Mixolydian", "Eb minor"], ["Cb", "Db dorian", "Gb Mixolydian", "Ab minor"]];
-    var flatsToPush = [["B", "b"], ["E", "e"], ["A", "a"], ["D", "d"], ["G", "g"], ["C", "c"], ["F", "f"]];
-    var sharpsToPush = [["F", "f"], ["C", "c"], ["G", "g"], ["D", "d"], ["A", "a"], ["E", "e"], ["B", "b"]];
+    var flatsToPush = [["E", "e"], ["A", "a"], ["D", "d"], ["G", "g"], ["C", "c"], ["F", "f"]];
+    var sharpsToPush = [ ["C", "c"], ["G", "g"], ["D", "d"], ["A", "a"], ["E", "e"], ["B", "b"]];
 
     function GetCaretPosition(ctrl) {
         var CaretPos = 0; // IE Support
@@ -183,7 +183,7 @@ $(document).ready(function(){
 
     function playKey(key, keys, args){
         if(key == keys[0] || key == keys[1] || key == keys[2] || key == keys[3]){
-            if(args[3].length){
+            if(args.length > 3){
                 $(this).play(accidentalNotes(args[0], args[1], args[2], args[3]));
             }else {
                 $(this).play(accidentalNotes(args[0], args[1], args[2]));
@@ -191,7 +191,7 @@ $(document).ready(function(){
             return true;
         }else{
             return false
-        }   
+        }
     }
 
     function playSharpKeys(key, keys){
@@ -205,11 +205,32 @@ $(document).ready(function(){
         }
         return false;
     }
-
-    function playKeysWithMod(key, keys, sharpsOrFlats, toPush, symbol, keyPress, boolOfTrue){
+    function playFlatKeys(key, keys){
         for(var i=1; i<keys.length; i++){
-            if(!playKey(key, keys[i], [sharpsOrFlats, symbol, keyPress, boolOfTrue])){
-                sharpsOrFlats.push(toPush[i][0], toPush[i][1]);
+            if(!playKey(key, keys[i], [flats, '_', keyPress, true])){
+                flats.push(flatsToPush[i][0], flatsToPush[i][1]);
+            } else{
+                i = keys.length;
+                return true;
+            }
+        }
+        return false;
+    }
+    function playVanSharpKeys(key, keys){
+        for(var i=1; i<keys.length; i++){
+            if(!playKey(key, keys[i], [sharps, '^', keyPress])){
+                sharps.push(sharpsToPush[i][0], sharpsToPush[i][1]);
+            } else{
+                i = keys.length;
+                return true;
+            }
+        }
+        return false;
+    }
+    function playVanFlatKeys(key, keys){
+        for(var i=1; i<keys.length; i++){
+            if(!playKey(key, keys[i], [flats, '_', keyPress])){
+                flats.push(flatsToPush[i][0], flatsToPush[i][1]);
             } else{
                 i = keys.length;
                 return true;
@@ -218,18 +239,28 @@ $(document).ready(function(){
         return false;
     }
 
-    function playKeys(key, keys, sharpsOrFlats, toPush, symbol, keyPress, boolOfFalse){
+
+    function playKeys(key, keys, sharpsOrFlats, toPush, symbol, keyPress, bool){
         for(var i=1; i<keys.length; i++){
-            if(!playKey(key, keys[i], [sharpsOrFlats, symbol, keyPress])){
-                sharpsOrFlats.push(toPush[i][0], toPush[i][1]);
-            } else{
-                i = keys.length;
-                return true;
+            if(bool){
+                if(!playKey(key, keys[i], [sharpsOrFlats, symbol, keyPress, bool])){
+                    sharpsOrFlats.push(toPush[i][0], toPush[i][1]);
+                } else{
+                    i = keys.length;
+                    return true;
+                }
+            }else {
+                if(!playKey(key, keys[i], [sharpsOrFlats, symbol, keyPress])){
+                    sharpsOrFlats.push(toPush[i][0], toPush[i][1]);
+                } else{
+                    i = keys.length;
+                    return true;
+                }
             }
+            
         }
         return false;
     }
-
 
     $('#abc').on("click", function(){
         findSurroundingChars();
@@ -320,8 +351,8 @@ $(document).ready(function(){
                     $(this).play(lastChar + keyPress);
                 }else
                 //Sharp keys
-                if(!playKeysWithMod(key, sharpsArray, ["F", "f"], sharpsToPush, '^', keyPress, true)){
-                    playKeysWithMod(key, flatsArray, ["B", "b"], flatsToPush, '_', keyPress, true)
+                if(!playKeys(key, sharpsArray, sharps, sharpsToPush, '^', keyPress, true)){
+                    playKeys(key, flatsArray, flats, flatsToPush, '_', keyPress, true);
                 }
                 
             }
@@ -332,8 +363,8 @@ $(document).ready(function(){
                 $(this).play(keyPress);
             }else
             //Sharp keys
-            if(!playKeys(key, sharpsArray, ["F", "f"], sharpsToPush, '^', keyPress, false)){
-                playKeys(key, flatsArray, ["B", "b"], flatsToPush, '_', keyPress, false)
+            if(!playKeys(key, sharpsArray, sharps, sharpsToPush, '^', keyPress)){
+                playKeys(key, flatsArray, flats, flatsToPush, '_', keyPress);
             }
             
         }
@@ -396,7 +427,7 @@ $(document).ready(function(){
                     }
                 }
                 new_abc += splitArray[i];
-            }            
+            }
             $('#play').fadeOut(250);
             return new_abc;
         }else {
@@ -464,7 +495,7 @@ $(document).ready(function(){
         var hdr = build_abc_hdr(hdr_array);
         if(!abc){
 
-            var abc_editor = new ABCJS.Editor("abc", { canvas_id: "canvas", midi_id:"midi", warnings_id:"warnings"});            
+            var abc_editor = new ABCJS.Editor("abc", { canvas_id: "canvas", midi_id:"midi", warnings_id:"warnings"});
             abc = true;
         }
         
@@ -475,42 +506,42 @@ $(document).ready(function(){
     }
     /*A*/
     var editor1 = document.getElementById("abc");
-    editor1.spellcheck = false;    
+    editor1.spellcheck = false;
     var lastKey = $('#key').find("option:selected").attr("id");
     var lastKeyVal = '';
     var lastMode = $('#tune_mode_input').find("option:selected").attr("id");
     var lastModeVal = '';
     
     
-    //triggers test if every 500ms if our input fields have changed. 
-    setInterval(function (){ 
+    //triggers test if every 500ms if our input fields have changed.
+    setInterval(function (){
           
         if($('#key').find("option:selected").attr("id") !== lastKey){
             lastKey = $('#key').find("option:selected").attr("id");
-            start_new_abc();            
-        } else 
+            start_new_abc();
+        } else
         if($('#key').val() !== lastKeyVal){//second test for value dynamically updates content as you scroll through options
             lastKeyVal = $('#key').val();
             start_new_abc();
-        }else    
+        }else
         if($('#tune_mode_input').find("option:selected").attr("id") !== lastMode){
             
-            //since changing mode also changes the key now we need to actually test 
-            //for the value, and not the selected option (since the new option will 
-            //actually have the same id as the old one), works best nested here rather 
-            //than as a sibling to the other tests. 
+            //since changing mode also changes the key now we need to actually test
+            //for the value, and not the selected option (since the new option will
+            //actually have the same id as the old one), works best nested here rather
+            //than as a sibling to the other tests.
             
             var lastKey3 = '';
             var intervalId = setInterval(function(){
                 if($('#key').val() !== lastKey3){
                    lastKey3 = $('#key').val();
                     start_new_abc();
-                }        
+                }
             }, 666);
             lastMode = $('#tune_mode_input').find("option:selected").attr("id");
             start_new_abc();
         }
-    }, 1000);  
+    }, 1000);
     $('#tune_title').on('change keyup', function(){
          start_new_abc();
     });
@@ -527,7 +558,7 @@ $(document).ready(function(){
     });
     $('#metre').change(function(){
         start_new_abc();
-    })    
+    })
     $('#tune_mode_input').on('change keyup paste mouseup', function(){
         start_new_abc();
     })

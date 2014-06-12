@@ -3,8 +3,8 @@ $(document).ready(function(){
     var editor
     var selection = '';//for playing selections
     //var available_notes = new Array("C,", "D,", "E,", "F,", "G,", "A,", "B,", "C", "D", "E", "F", "G", "A", "B", "c", "d", "e", "f", "g", "a", "b", "c'", "d'", "e'", "f'", "g'", "a'", "b'");
-    var sharps = new Array();
-    var flats = new Array();
+    var sharps = ["F", "f"];//will have to change to empty array if the "playKeys()" function starts at 0 instead of 1
+    var flats = ["B", "b"];//will have to change to empty array if the "playKeys()" function starts at 0 instead of 1
     var nineCharsAgo = '';
     var eightCharsAgo = '';
     var sevenCharsAgo = '';
@@ -27,9 +27,12 @@ $(document).ready(function(){
                     ["Bb", "C dorian", "F Mixolydian", "G minor"], ["Eb", "F dorian", "Bb Mixolydian", "C minor"],
                     ["Ab", "Bb dorian", "Eb Mixolydian", "F minor"], ["Db", "Eb dorian", "Ab Mixolydian", "Bb minor"],
                     ["Gb", "Ab dorian", "Db Mixolydian", "Eb minor"], ["Cb", "Db dorian", "Gb Mixolydian", "Ab minor"]];
-    var flatsToPush = [["E", "e"], ["A", "a"], ["D", "d"], ["G", "g"], ["C", "c"], ["F", "f"]];
-    var sharpsToPush = [ ["C", "c"], ["G", "g"], ["D", "d"], ["A", "a"], ["E", "e"], ["B", "b"]];
+    //currently the first elements ["B", "b"] and ["F", "f"] are not used in these arrays, the playKeys() function that uses these arrays starts looping at 1 instead of 0 index
+    //it's important that ["E", "e"] and ["C", "c"] are at the second position of the array
+    var flatsToPush = [["B", "b"], ["E", "e"], ["A", "a"], ["D", "d"], ["G", "g"], ["C", "c"], ["F", "f"]];
+    var sharpsToPush = [["F", "f"], ["C", "c"], ["G", "g"], ["D", "d"], ["A", "a"], ["E", "e"], ["B", "b"]];
 
+    //returns the caret position to findSurroundingChars()
     function GetCaretPosition(ctrl) {
         var CaretPos = 0; // IE Support
         if (document.selection) {
@@ -49,7 +52,7 @@ $(document).ready(function(){
         return selector.substring(caretStart, caretEnd);
     }
     
-       
+    //fetches the current caret position and populates global variables with the surrounding characters to the caret   
     function findSurroundingChars() {
         var selector = document.getElementById("abc");
         var caretPos = GetCaretPosition(selector);
@@ -70,6 +73,7 @@ $(document).ready(function(){
         sixCharsAhead = returnChar(selector.value, caretPos +5, caretPos +6);//six chars ahead
     }
     
+    //takes a list of notes that should be modified (depending on the key)
     //octave is a boolean //arg 1 => sharps, arg 2 => '^', arg 3 => keyPress, arg 4 => boolean
     function accidentalNotes(accidentals, modifierString, keyPress, octave){
         var accidental = false;
@@ -92,6 +96,8 @@ $(document).ready(function(){
             }
         }
     }
+
+    //when playing back a selection, to determine what notes should be altered according to the key argument
     function keySpecificPlayBack(key, accidentalArray, sharpsOrFlats, abcArray, accidentalChar, sharpsOrFlatsToPush){
         
         for(var i = 0; i < accidentalArray.length; i++){
@@ -108,7 +114,9 @@ $(document).ready(function(){
             sharpsOrFlats.push(sharpsOrFlatsToPush[i][0], sharpsOrFlatsToPush[i][1]);
         }
     }
-   function playKeysExtraCharacters(key, keys, sharpsOrFlats, toPush, symbol, keyPress, boolOfFalse){
+
+    //I think this does nothing at the moment ...lol maybe a precursor to playKeys()
+    /*function playKeysExtraCharacters(key, keys, sharpsOrFlats, toPush, symbol, keyPress, boolOfFalse){
         for(var i=1; i<keys.length; i++){
             if(!playKey(key, keys[i], [sharpsOrFlats, symbol, keyPress])){
                 sharpsOrFlats.push(toPush[i][0], toPush[i][1]);
@@ -118,8 +126,12 @@ $(document).ready(function(){
             }
         }
         return false;
-    }
-   function letterCharsAgo(chars, key) {
+    }*/
+
+    //called when a letter was found behind a modifier character such as a comma or apostrophe 
+    //e.g. "FFF,,,," should return "F,,,," where "__F,,,," should return "__F,,,,"
+    //doesn't currently account for the key, so multiple octave modifiers will be out of tune until that code is written
+    function letterCharsAgo(chars, key) {
         var output = '';
         // second character is one behind the found letter
         //so when it is an accidental
@@ -131,6 +143,8 @@ $(document).ready(function(){
             //output will include everything but the last two characters (our suspected accidental notes)
 //TO DO handle for keys
             if(key !== void 0){
+
+                //the code to handle different keys goes here
 
             }else{//no key specified
                 //ars[0] = accidentalNotes()
@@ -172,7 +186,7 @@ $(document).ready(function(){
         }
     }
     
-    //tests for an accidental the specified number of Characters Ago (charsAgo) e.g. fourCharsAgo /
+    //really just send it a character and it tells if it's an ABC accidental. The symbols are ""
     function accidentalCharsAgo(charsAgo){
         if(charsAgo == '^' || charsAgo == '_' || charsAgo == '='){
             return true;
@@ -180,66 +194,27 @@ $(document).ready(function(){
             return false;
         }
     }
-
+    //if the current key is in the keys array then play the content using the appropriate accidental modifiers
     function playKey(key, keys, args){
         if(key == keys[0] || key == keys[1] || key == keys[2] || key == keys[3]){
             if(args.length > 3){
-                $(this).play(accidentalNotes(args[0], args[1], args[2], args[3]));
+                alert(accidentalNotes(args[0], args[1], args[2], args[3]));
             }else {
-                $(this).play(accidentalNotes(args[0], args[1], args[2]));
+                alert(accidentalNotes(args[0], args[1], args[2]));
             }
             return true;
         }else{
             return false
         }
     }
-
-    function playSharpKeys(key, keys){
-        for(var i=1; i<keys.length; i++){
-            if(!playKey(key, keys[i], [sharps, '^', keyPress, true])){
-                sharps.push(sharpsToPush[i][0], sharpsToPush[i][1]);
-            } else{
-                i = keys.length;
-                return true;
-            }
-        }
-        return false;
-    }
-    function playFlatKeys(key, keys){
-        for(var i=1; i<keys.length; i++){
-            if(!playKey(key, keys[i], [flats, '_', keyPress, true])){
-                flats.push(flatsToPush[i][0], flatsToPush[i][1]);
-            } else{
-                i = keys.length;
-                return true;
-            }
-        }
-        return false;
-    }
-    function playVanSharpKeys(key, keys){
-        for(var i=1; i<keys.length; i++){
-            if(!playKey(key, keys[i], [sharps, '^', keyPress])){
-                sharps.push(sharpsToPush[i][0], sharpsToPush[i][1]);
-            } else{
-                i = keys.length;
-                return true;
-            }
-        }
-        return false;
-    }
-    function playVanFlatKeys(key, keys){
-        for(var i=1; i<keys.length; i++){
-            if(!playKey(key, keys[i], [flats, '_', keyPress])){
-                flats.push(flatsToPush[i][0], flatsToPush[i][1]);
-            } else{
-                i = keys.length;
-                return true;
-            }
-        }
-        return false;
-    }
-
-
+    /*
+    iterate through the keys array to see when the current key is matched. At every iteration, 
+    add one more accidental sharps, or the flats global array. The accidentals are added in the 
+    order of the circle of fifths. For sharps start at "F", adding C,G,D,A,E,B at each iteration. 
+    For flats start at "B" and adding E,A,D,G,C,F at each iteration. When the key matches an 
+    element in the keys array, the sharps or flats array should contain all the appropriate sharps 
+    or flats for the key set that yeilded a match
+    */
     function playKeys(key, keys, sharpsOrFlats, toPush, symbol, keyPress, bool){
         for(var i=1; i<keys.length; i++){
             if(bool){
@@ -262,6 +237,7 @@ $(document).ready(function(){
         return false;
     }
 
+    //insures that the global character values are updated on every click in the abc text area
     $('#abc').on("click", function(){
         findSurroundingChars();
     })
@@ -270,7 +246,6 @@ $(document).ready(function(){
     //play the notes as they are pressed
     //function keyPress();
     $('#abc').on('keypress', function(event){
-
 
         findSurroundingChars();
         var key = $('#key').val();
@@ -350,27 +325,33 @@ $(document).ready(function(){
                 if(key == "C" || key == "D dorian" || key == "G Mixolydian" || key == "A minor"){
                     $(this).play(lastChar + keyPress);
                 }else
-                //Sharp keys
+                /*
+                Sharp keys. pass a bool equal to true to let the playKeys() function 
+                know that the note is modified by octave
+                */
                 if(!playKeys(key, sharpsArray, sharps, sharpsToPush, '^', keyPress, true)){
-                    playKeys(key, flatsArray, flats, flatsToPush, '_', keyPress, true);
+                    playKeys(key, flatsArray, flats, flatsToPush, '_', keyPress, true);//Flat keys
                 }
                 
             }
-        }else{//if keypress was not a modifier AND last key press also was not a modifier
-            //then just play the keyed note value, modified by key, of course
+        }else{
 
+            //if keypress was not a modifier AND last key press also was not a modifier
+            //then just play the keyed note value, modified by key, of course
             if(key == "C" || key == "D dorian" || key == "G Mixolydian" || key == "A minor"){
                 $(this).play(keyPress);
             }else
-            //Sharp keys
+            //Sharp keys. do not pass the bool value if the note is not modified by octave
             if(!playKeys(key, sharpsArray, sharps, sharpsToPush, '^', keyPress)){
-                playKeys(key, flatsArray, flats, flatsToPush, '_', keyPress);
+                playKeys(key, flatsArray, flats, flatsToPush, '_', keyPress);//Flat keys
             }
             
         }
 
     });
-    
+//TO DO -- get this function to work in Firefox    
+    //pretty self explanatory. called when the user has selected some text in the abc text area
+    //doesn't work in Firefox :(
     function getSelectionText() {
     
         var text = "";
@@ -388,6 +369,8 @@ $(document).ready(function(){
 
     //inserts special characters where needed to comply with the key
     //also scans for triplets specified by the abc standard
+    //even though I wrote this function I would be hard pressed to explain it in detail, not sure it
+    //handles edge cases very well, should be tested more thoroughly
     function playBack(key, keys, accidentals, splitArray, modifier){
         var new_abc = '';
         //testing if the key matches a specified key
@@ -488,6 +471,7 @@ $(document).ready(function(){
         start_new_abc();
     })
 
+    //renders sheet music based on the current values in each field
     function start_new_abc(){
         
         var hdr_array = [["X:", 1], ["T:", $('#tune_title').val()], ["R:", $('#tune_type').val()], ["M:", $('#metre').val()],
@@ -513,9 +497,9 @@ $(document).ready(function(){
     var lastModeVal = '';
     
     
-    //triggers test if every 500ms if our input fields have changed.
-    setInterval(function (){
-          
+    //triggers test if every 1000ms if our input fields have changed.
+    //this tends to drag really slow browsers/computers. The interval was changed from 500 to 1000 which seems fast enough
+    setInterval(function (){        
         if($('#key').find("option:selected").attr("id") !== lastKey){
             lastKey = $('#key').find("option:selected").attr("id");
             start_new_abc();
@@ -537,11 +521,14 @@ $(document).ready(function(){
                    lastKey3 = $('#key').val();
                     start_new_abc();
                 }
-            }, 666);
+            }, 999); //should be different than the interval that it is nested in.
             lastMode = $('#tune_mode_input').find("option:selected").attr("id");
             start_new_abc();
         }
     }, 1000);
+    
+    //if any of these fields change the abc should be updated
+    //once again this can drag slower computers.
     $('#tune_title').on('change keyup', function(){
          start_new_abc();
     });
@@ -571,6 +558,8 @@ $(document).ready(function(){
             selection == '';
         }
     });
+
+    //save the tune to the database!
     $('#save').on('click', function(){
         var tune_body = $('#abc').val().replace(/\n/g, '<br />');
         $.post(
@@ -597,8 +586,9 @@ $(document).ready(function(){
           );
     })
     /*
-var headers = [["X:", 1], ["T:", title], ["R:", type], ["M:", metre], ["L:", length], ["K:", key]];
-*/
+    var headers = [["X:", 1], ["T:", title], ["R:", type], ["M:", metre], ["L:", length], ["K:", key]];
+    */
+    //self explanatory. Builds the header content that abc.js needs in order to recognize the ABC code and render sheet music on the page
     function build_abc_hdr(headers){
         var hdr = headers[0][0] + [0][1];
         for(i = 0; i < headers.length; i++){

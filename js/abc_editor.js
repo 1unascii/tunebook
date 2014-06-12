@@ -194,6 +194,7 @@ $(document).ready(function(){
             return false;
         }
     }
+
     //if the current key is in the keys array then play the content using the appropriate accidental modifiers
     function playKey(key, keys, args){
         if(key == keys[0] || key == keys[1] || key == keys[2] || key == keys[3]){
@@ -207,6 +208,7 @@ $(document).ready(function(){
             return false
         }
     }
+
     /*
     iterate through the keys array to see when the current key is matched. At every iteration, 
     add one more accidental sharps, or the flats global array. The accidentals are added in the 
@@ -349,6 +351,7 @@ $(document).ready(function(){
         }
 
     });
+
 //TO DO -- get this function to work in Firefox    
     //pretty self explanatory. called when the user has selected some text in the abc text area
     //doesn't work in Firefox :(
@@ -418,6 +421,7 @@ $(document).ready(function(){
         }
     }
 
+    //when abc code is slected create a playback box
     $('#abc').on('select keyup', function(){
         
         key = $('#key').val();
@@ -427,14 +431,17 @@ $(document).ready(function(){
         if(selection){
             $('#play_selection').html("<input type='button' id='play' value='Play Selection'/>");
         }
+
+        //the generated playback button was clicked
         $('#play').on("click", function(){
             if(selection){
                 
                 sharps = new Array();
                 flats = new Array();
                 key = $('#key').val();
-                var abc_split = selection.split('');
 
+                //the selection is split into an array that is parsed by the keySpecificPlayback() function
+                var abc_split = selection.split('');
                 
                 if(keySpecificPlayBack(key, sharpsArray, sharps, abc_split, '^', sharpsToPush)){
                     $('#abc').play(keySpecificPlayBack(key, sharpsArray, sharps, abc_split, '^', sharpsToPush));//jQuery Turtle plugin

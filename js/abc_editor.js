@@ -198,9 +198,9 @@ $(document).ready(function(){
     function playKey(key, keys, args){
         if(key == keys[0] || key == keys[1] || key == keys[2] || key == keys[3]){
             if(args.length > 3){
-                alert(accidentalNotes(args[0], args[1], args[2], args[3]));
+                $(this).play(accidentalNotes(args[0], args[1], args[2], args[3]));
             }else {
-                alert(accidentalNotes(args[0], args[1], args[2]));
+                $(this).play(accidentalNotes(args[0], args[1], args[2]));
             }
             return true;
         }else{

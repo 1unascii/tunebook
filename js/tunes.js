@@ -49,23 +49,21 @@ $(document).ready(function(){
                             "L:" + tune.default_note_length +  "<br />" +
                             "K:" + tune.key + "<br />" +
                             tune.tune_body + "<br /><br />" +
-                            "</span>" + 
-                            "<span class='ui-icon ui-icon-circle-close' style='display: inline-block;'></span>" + 
-                            "<span class='ui-icon ui-icon-arrow-4-diag' style='display: inline-block;'></span>"
+                            "</span>"                            
                         );
                         
                         //Close this tune body
-                        //$("#tune_body").after(");
+                        $(tune_id_selector).after("<span class='ui-icon ui-icon-circle-close' style='display: inline-block;'></span><span class='ui-icon ui-icon-arrow-4-diag' style='display: inline-block;'></span>");
                         $(".ui-icon-circle-close").on("click", function(){
-                            var prev_id = $(this).prev().attr('id');
+                            //var prev_id = $(this).prev().attr('id');
                            
-                                $(tune_id_selector).html(tune.tune_title);
-                            $('.tune_body').remove();                         
+                            $(tune_id_selector).html("<img src='images/notes.gif' alt='display sheet music'/>" + tune.tune_title);
+                            
+                            $('.tune_body').remove();
+                            $('.abctext').remove();                         
                             $('.ui-icon-arrow-4-diag').remove();
                             $(this).remove();
-                        }).on("mouseover", function(){
-                            $(this).html("close");
-                        });
+                        })
                         
                         //Fullscreen
                         $('.ui-icon-arrow-4-diag').on("click", function(){

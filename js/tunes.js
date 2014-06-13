@@ -41,24 +41,26 @@ $(document).ready(function(){
                         
                         //display this tune body
                         $(tune_id_selector).html(
-                            "<script src='js/abcjs_plugin_1.7-min.js' type='text/javascript'></script><script src='js/jquery.fullscreen-0.4.1.min.js' type='text/javascript'></script><script type='text/javascript'>ABCJS.plugin['hide_abc'] = true;</script>" + 
-                            "<span class='tune_body' style='white-space: pre;'>" +                            
+                            "<script src='js/abcjs_plugin_1.8-min.js' type='text/javascript'></script><script src='js/jquery.fullscreen-0.4.1.min.js' type='text/javascript'></script><script type='text/javascript'>ABCJS.plugin['hide_abc'] = true;</script>" + 
+                            "<span class='tune_body' id='tune_body' style='white-space: pre;'>" +                            
                             "X:" + tune.tune_id + "<br />" +
                             "T:" + tune.tune_title + "<br />" +
                             "M:" + tune.metre + "<br />" +
                             "L:" + tune.default_note_length +  "<br />" +
                             "K:" + tune.key + "<br />" +
                             tune.tune_body + "<br /><br />" +
-                            "</span>"
+                            "</span>" + 
+                            "<span class='ui-icon ui-icon-circle-close' style='display: inline-block;'></span>" + 
+                            "<span class='ui-icon ui-icon-arrow-4-diag' style='display: inline-block;'></span>"
                         );
                         
                         //Close this tune body
-                        $(tune_id_selector).after("<span class='ui-icon ui-icon-circle-close' style='display: inline-block;'></span><span class='ui-icon ui-icon-arrow-4-diag' style='display: inline-block;'></span>");
+                        //$("#tune_body").after(");
                         $(".ui-icon-circle-close").on("click", function(){
                             var prev_id = $(this).prev().attr('id');
                            
                                 $(tune_id_selector).html(tune.tune_title);
-                                                     
+                            $('.tune_body').remove();                         
                             $('.ui-icon-arrow-4-diag').remove();
                             $(this).remove();
                         }).on("mouseover", function(){
@@ -70,7 +72,7 @@ $(document).ready(function(){
                             
                             if(!$.fullscreen.isFullScreen()){
                                 //alert("hello world");
-                                $(tune_id_selector).css('background-color', "FFFFFF");
+                                //$(tune_id_selector).css('background-color', "FFFFFF");
                                 $(tune_id_selector).fullscreen(); 
                                 $(tune_id_selector).on("dblclick", function(){
                                     if($.fullscreen.isFullScreen()){

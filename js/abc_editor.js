@@ -115,19 +115,6 @@ $(document).ready(function(){
         }
     }
 
-    //I think this does nothing at the moment ...lol maybe a precursor to playKeys()
-    /*function playKeysExtraCharacters(key, keys, sharpsOrFlats, toPush, symbol, keyPress, boolOfFalse){
-        for(var i=1; i<keys.length; i++){
-            if(!playKey(key, keys[i], [sharpsOrFlats, symbol, keyPress])){
-                sharpsOrFlats.push(toPush[i][0], toPush[i][1]);
-            } else{
-                i = keys.length;
-                return true;
-            }
-        }
-        return false;
-    }*/
-
     //called when a letter was found behind a modifier character such as a comma or apostrophe 
     //e.g. "FFF,,,," should return "F,,,," where "__F,,,," should return "__F,,,,"
     //doesn't currently account for the key, so multiple octave modifiers will be out of tune until that code is written
@@ -375,14 +362,16 @@ $(document).ready(function(){
     //even though I wrote this function I would be hard pressed to explain it in detail, not sure it
     //handles edge cases very well, should be tested more thoroughly
     function playBack(key, keys, accidentals, splitArray, modifier){
+
+        //an empty string to be returned
         var new_abc = '';
-        //testing if the key matches a specified key
+        //testing if the key matches any key in the sharpsArray or flatsArray
         if(key == keys[0] || key == keys[1] || key == keys[2] || key == keys[3]){
             for(var i = 0; i < splitArray.length; i++){
-                //accidental or octave mod detection
+                //accidental detection
                 for(var c = 0; c < accidentals.length; c++){
                     if(accidentals[c] == splitArray[i] && splitArray[i-1] !== '^' && splitArray[i-1] !== '_' && splitArray[i-1] !== '='){
-                        //accidentals or octave modifiers are being added here
+                        //accidentals are being added here
                         splitArray[i] = modifier + splitArray[i];
                     }
                 }
@@ -391,7 +380,7 @@ $(document).ready(function(){
                     var count = 0;
                     var count2 = 1;
                     while(count < 2){
-                        //triplet detection has it's own accidental detection .... for now
+                        //all of these characters will break the triplet processing
                         if(splitArray[i + count2] !== ' ' && splitArray[i + count2] !== '^' && splitArray[i + count2]
                             !== '_' && splitArray[i + count2] !== '=' && splitArray[i + count2]
                             !== ',' && splitArray[i + count2] !== '\'' && splitArray[i + count2]
@@ -399,12 +388,17 @@ $(document).ready(function(){
                         {
                             for(var c=0; c<accidentals.length; c++){
                                 if(accidentals[c] == splitArray[i + count2]){
+                                    //accidentals are being added
                                     splitArray[i + count2] = modifier + splitArray[i + count2];
                                 }
                             }
+                            //detecting octave modifiers
+                    //TO DO detect multiple octaves --low priority
                             if(splitArray[i + count2 + 1] == ',' || splitArray[i + count2 + 1] == '\''){
+                                //this character cuts the note value in half, in the playback this will give a realistic triplet rhythm
                                 splitArray[i + count2 + 1] = splitArray[i + count2 + 1] + '/';
                             }else{
+                                //this character cuts the note value in half, in the playback this will give a realistic triplet rhythm
                                 splitArray[i + count2] = splitArray[i + count2] + '/';
                             }
                             count++;
@@ -412,6 +406,7 @@ $(document).ready(function(){
                         count2++;
                     }
                 }
+                //reassemble the array back into a string
                 new_abc += splitArray[i];
             }
             $('#play').fadeOut(250);
@@ -455,7 +450,8 @@ $(document).ready(function(){
             }
         })
     })
-    
+
+    //change the key options when the mode is changed
     $('#tune_mode_input').change(function(){
         var id = $(this).find("option:selected").attr("id");
         switch (id){

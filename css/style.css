@@ -61,3 +61,7 @@ footer                          {
 td                                      {
                                         background-color: FFFFFF;
                                         }
+#abc_code                               {
+                                        display: inline-block;
+                                        color: white;
+                                        }

@@ -4,18 +4,18 @@
     include_once('../functions.php');
     //include_once('../links.php');
 ?>
-
+<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 <script type="text/javascript" src="js/abc_editor.js"></script>
 <script src="js/functions.js" type="text/javascript"></script> 
-<script src="js/abcjs_editor_1.7-min.js" type="text/javascript"></script>
 <script src="js/jquery-turtle.js" type="text/javascript"></script> 
+<script type="text/javascript" src="abcjs_basic_1.10-min.js"></script>
 
 <div id="form_wrapper">
 <!--FORM BEGINS-->
 <form id="form_for_new_tune">
 
 <label>Title: </label>
-<input type="text" id="tune_title" name="tune_title"/>
+<input type="text" id="tune_title" <?php if($_GET['title']){?>value=<?php echo $_GET['title'];}?> name="tune_title"/>
 <br />
 <!--pre>
 <?php
@@ -102,7 +102,8 @@
 
 <label>ABC: </label>
 <div id="abc_editor">            
-<textarea id="abc" rows="10" cols="45" name="tune_body"></textarea>          
+<textarea id="abc" rows="10" cols="45" name="tune_body"></textarea>  
+<!--span id="abc_code"></span-->        
 </div>
 <br />
 
@@ -110,18 +111,16 @@
     if($_SESSION['Authenticated']){                
        echo '<input type="button" value="save" id="save"/>';                
     }
-?>       
+?>    
 
 </form>
-
-
 </div> 
 
 <div id="canvas_wrapper">   
-<div id="warning_canvas_wrapper">
-    <div id="canvas" ></div>
-    <div id="warnings">
-</div>
+    <div id="warning_canvas_wrapper">    
+        <div id="canvas" ></div>
+        <div id="warnings">        
+    </div>
 </div>
 <!--div id="midi"></div-->
-<!--div id="warnings"></div-->
+<div id="warnings"></div-->

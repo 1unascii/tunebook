@@ -1,6 +1,5 @@
 <?php
-    session_start();
-    
+    session_start();    
 ?>
 <html>
 <div id="page_loader">Please wait while we query the database</div>
@@ -13,26 +12,33 @@
     <![endif]-->
 <!--INTERNET EXPLORER STYLES-->
 
-<!--UNIVERVERSAL STYLES-->
-    <!--JQUERY-->
+<!--UNIVERVERSAL STYLES-->    
+<!--UNIVERSAL STYLES-->
+
+<!--SCRIPTS-->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
     <link href="css/overcast/jquery-ui-1.10.3.custom.css" rel="stylesheet" type="text/css"/>
     <link href="css/style.css" rel="stylesheet" type="text/css"/>
     <script src='js/abcjs_plugin_1.8-min.js' type='text/javascript'></script>
-    <!--JQUERY-->
-<!--UNIVERSAL STYLES-->
+<!--SCRIPTS-->
+
 <!--PAGE TITLE-->
 <title>My Tunebook</title>
+<!--PAGE TITLE-->
+
+<!--HEADING-->
 <div align = "center">
     <h2><a href='index.php'>My Tunebook</a></h2>
     <!--PUT LOGO HERE
         <img id="logo" align = "center" src=''/>
     LOGO-->
 </div>
-    <!--PUT FAVICON HERE and close comments
-        <link rel="shortcut icon" href="favicon.ico" />
-    FAVICON-->
+<!--HEADING-->
+
+<!--PUT FAVICON HERE and close comments-->
+    <link rel="shortcut icon" href="images/notes.gif" />
+<!--FAVICON-->
 </head>
 <body>
 

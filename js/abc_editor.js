@@ -231,11 +231,7 @@ $(document).ready(function(){
         findSurroundingChars();
     })
     
-
-    //play the notes as they are pressed
-    //function keyPress();
-    $('#abc').on('keypress', function(event){
-
+    function interpretSurroundingChars(event){
         findSurroundingChars();
         var key = $('#key').val();
         var c = event.which;//character code
@@ -336,7 +332,13 @@ $(document).ready(function(){
             }
             
         }
+    
+    }
 
+    //play the notes as they are pressed
+    //function keyPress();
+    $('#abc').on('keypress', function(event){
+        interpretSurroundingChars(event);
     });
 
 //TO DO -- get this function to work in Firefox    
@@ -476,20 +478,13 @@ $(document).ready(function(){
 
     //renders sheet music based on the current values in each field
     function start_new_abc(){
-        
-        var hdr_array = [["X:", 1], ["T:", $('#tune_title').val()], ["R:", $('#tune_type').val()], ["M:", $('#metre').val()],
-                         ["L:", $('#defaule_note_length').val()], ["K:", $('#key').val()]];
-        var hdr = build_abc_hdr(hdr_array);
-        if(!abc){
-
-            var abc_editor = new ABCJS.Editor("abc", { canvas_id: "canvas", midi_id:"midi", warnings_id:"warnings"});
-            abc = true;
-        }
-        
-        window.ABCJS.edit.EditArea.prototype.getString = function() {
-            return hdr + this.textarea.value;
-        }
-        
+        //var abc_editor = '';
+        var abc_code = "";
+        var hdr_array = [   ["X:", 1], ["T:", $('#tune_title').val()], ["R:", $('#tune_type').val()], 
+                            ["M:", $('#metre').val()],["L:", "1/8"], ["K:", $('#key').val()]];
+        var hdr = build_abc_hdr(hdr_array);        
+        abc_code = $('#abc').val();        
+        abc_editor = ABCJS.renderAbc("canvas", hdr + abc_code);               
     }
     /*A*/
     var editor1 = document.getElementById("abc");
@@ -532,35 +527,45 @@ $(document).ready(function(){
     
     //if any of these fields change the abc should be updated
     //once again this can drag slower computers.
-    $('#tune_title').on('change keyup', function(){
+    $('#tune_title').on('change', function(){        
+        
          start_new_abc();
     });
     $('#tune_type').on("change", function(){
         if($(this).val() == "Add another"){
             //for some reason the width needs an extra 5 pixels to line up...
-            var newTuneType = "<br /><label style='width: 153px;'>New Tune Type: </label><input type='text' id='new_tune_type'/>";
-            $(this).after(newTuneType);
+            //var newTuneType = "<br /><label style='width: 153px;'>New Tune Type: </label><input type='text' id='new_tune_type'/>";
+            //$(this).after(newTuneType);
             alert('test');
         }else{
+            //$('#canvas_wrapper').load("<div id='canvas' ></div><script src='abcjs_editor_1.8-min.js' type='text/javascript'></script>");
             start_new_abc();
         }
         
     });
     $('#metre').change(function(){
+        //$('#canvas_wrapper').load("<div id='canvas' ></div><script src='abcjs_editor_1.8-min.js' type='text/javascript'></script>");
         start_new_abc();
     })
     $('#tune_mode_input').on('change keyup paste mouseup', function(){
+        //$('#canvas_wrapper').load("<div id='canvas' ></div><script src='abcjs_editor_1.8-min.js' type='text/javascript'></script>");
         start_new_abc();
     })
     $('#key').on('change mouseup', function(){
+        //$('#canvas_wrapper').load("<div id='canvas' ></div><script src='abcjs_editor_1.8-min.js' type='text/javascript'></script>");
         start_new_abc();
     })
     $('#key').on('click', function(){
         if($('#play').length){
+           // $('#canvas_wrapper').load("<div id='canvas' ></div><script src='abcjs_editor_1.8-min.js' type='text/javascript'></script>");       
            $('#play').remove();
             selection == '';
         }
-    });
+    })
+    $('#abc').on('change keyup', function(){
+        //$('#canvas_wrapper').load("<div id='canvas' ></div><script src='abcjs_editor_1.8-min.js' type='text/javascript'></script>");       
+        start_new_abc();
+    })
 
     //save the tune to the database!
     $('#save').on('click', function(){
@@ -593,12 +598,14 @@ $(document).ready(function(){
     */
     //self explanatory. Builds the header content that abc.js needs in order to recognize the ABC code and render sheet music on the page
     function build_abc_hdr(headers){
-        var hdr = headers[0][0] + [0][1];
+        //var hdr = "<span class='tune_body' id='tune_body' style='white-space: pre;'>";// = headers[0][0] + [0][1];
+        var hdr = "";
         for(i = 0; i < headers.length; i++){
-            if(headers[i].length){
+            if(headers[i].length > 1){
                 hdr += headers[i][0] + headers[i][1] + "\n";
             }
         }
+        //hdr += "</span>"; will get closed later
         return hdr;
     }
     

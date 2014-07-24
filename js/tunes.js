@@ -1,4 +1,3 @@
-
 $(document).ready(function(){
     $('#tunes').dataTable();
     $('td').css("font: Times New Roman");

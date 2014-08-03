@@ -7,7 +7,7 @@
 <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 <script type="text/javascript" src="js/abc_editor.js"></script>
 <script src="js/functions.js" type="text/javascript"></script> 
-<script src="js/jquery-turtle.js" type="text/javascript"></script> 
+<script src="js/jquery-turtle.min.js" type="text/javascript"></script> 
 <script type="text/javascript" src="abcjs_basic_1.10-min.js"></script>
 
 <div id="form_wrapper">

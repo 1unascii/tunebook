@@ -24,9 +24,16 @@
         if(insertQuery($query,  $params)){
             echo 'Thank you for signing up';
         }else{
-            echo 'There were one or more errors with your submission';
+            if(queryWithParams("SELECT * FROM users WHERE email = :param", $params['email'])){
+                echo 'The email you entered is already in use';
+            } 
+            if(queryWithParams("SELECT * FROM users WHERE user_name = :param", $params['user_name'])){
+                echo 'The username you entered is already in use';
+            }            
         }
         
+    } else {
+        echo "There was an unexpected error, or you don't have permission to access this page";
     }                
   
 ?>

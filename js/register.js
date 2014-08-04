@@ -1,6 +1,8 @@
 $(document).ready(function(){
     var error = false;
+    var errors = [];
     var password_err_bool = false;
+    var password_strength_err = false;
     var password_strength_err_msg = "<span id='pass_strength_err' class='ui-state-error' style='padding-right: 5px;'>"
                 + "<span class='ui-icon ui-icon-alert' style='display: inline-block; " 
                 + "margin-left: 5px; margin-right: 5px;'></span><span>Your password did not meet requirements</span></span>";
@@ -19,9 +21,9 @@ $(document).ready(function(){
         ],
         change:function(score, issues, pass) { //the function which is called when the password changes
             if(!pass){
-                password_err_bool = true;
+                password_strength_err= true;
             }else if(pass){
-                password_err_bool = false;
+                password_strength_err = false;
                 if($('#pass_strength_err').length){
                     $('#pass_strength_err').remove();
                 }
@@ -60,18 +62,25 @@ $(document).ready(function(){
                 error = true;
             }  
         }
-        
-        validateTextBox("#first_name", "Please enter your first name");
-        validateTextBox("#last_name", "Please enter your last name");
-        validateTextBox("#email", "Please enter your email address");
-        validateTextBox("#user_name", "Please choose a username");
+
+        errors['first_name'] = validateTextBox("#first_name", "Please enter your first name");
+        errors['last_name'] = validateTextBox("#last_name", "Please enter your last name");
+        errors['email'] = validateTextBox("#email", "Please enter your email address");
+        errors['user_name'] = validateTextBox("#user_name", "Please choose a username");
+
         validateTextBox("#password", "Please enter a password");
-        if(password_err_bool && !$('#pass_strength_err').length){
+        if(password_strength_err && !$('#pass_strength_err').length){
             $('#strength_meter').after(password_strength_err_msg);
+        }
+
+        for(var i=0; i<errors.length; i++){
+            if(errors[i] == true){
+                error = true;
+            }
         }
         
 	    
-        if(error == false && password_err_bool == false){
+        if(error == false && password_err_bool == false && password_strength_err == false){
             $.post(
                 "register.php",
                 {

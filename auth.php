@@ -5,7 +5,7 @@ include_once('connect.php');
   // User is logging in
   
   if (isset($_POST['login'])) {
-      if($_SESSION['Authenticated'] !== true){
+      if(!array_key_exists('Authenticated', $_SESSION)){
           if(authenticateUser($_POST['user_name'], sha1($_POST['password']))){
               $user = authenticateUser($_POST['user_name'], sha1($_POST['password']));              
               $_SESSION['author_id'] = $user['user_id'];

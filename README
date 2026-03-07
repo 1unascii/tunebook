@@ -1,0 +1,10 @@
+To build the database:
+
+1. Navigate to this folder in windows terminal. 
+2. Log into mysql -- 
+			mysql -u root -p 'type your password here, don't include single quotes'
+3. If you were able to log into mysql with no errors then we know our credentials were valid
+4. Go ahead and exit mysql by typing 'exit' without the quotes
+5. Now use the command mysql -u root -p 'your password' < testdatabase.sql
+
+This should build the most recent version of the test database saved in the sql file

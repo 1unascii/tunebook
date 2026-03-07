@@ -8,14 +8,29 @@ include_once('connect.php');
     $composer = $_POST['composer'];
     $query = "SELECT * FROM composers WHERE composer_name = '$composer'";
     $composer = simpleQuery($query);
-    $composer_id = $composer[0]['composer_id'];
     
-    $params = array(    'tune_title'    => $_POST['tune_title'],        'tune_type' => $tune_type_id,
-                        'author_id'     => $_SESSION['author_id'],    'composer_id' => $composer_id,
-                        'metre'         => $_POST['metre'],   'default_note_length' => $_POST['default_note_length'],
-                        'tune_key'      => $_POST['tune_key'],          'tune_body' => $_POST['tune_body'],
-                        'audio'         => 'None',                          'video' => 'None'); 
-    
+    if(isset($composer[0])){
+       $composer_id = $composer[0]['composer_id']; 
+       $params = array(    
+                'tune_title'    => $_POST['tune_title'],        
+                'tune_type'     => $tune_type_id,
+                'author_id'     => $_SESSION['author_id'],    'composer_id' => $composer_id,
+                'metre'         => $_POST['metre'],   'default_note_length' => $_POST['default_note_length'],
+                'tune_key'      => $_POST['tune_key'],          'tune_body' => $_POST['tune_body'],
+                'audio'         => 'None',                          'video' => 'None'); 
+    } else {
+    $params = array(    
+                'tune_title'            => $_POST['tune_title'],        
+                'tune_type'             => $tune_type_id,
+                'author_id'             => $_SESSION['author_id'],    
+                'composer_id'           => NULL,
+                'metre'                 => $_POST['metre'],   
+                'default_note_length'   => $_POST['default_note_length'],
+                'tune_key'              => $_POST['tune_key'],          
+                'tune_body'             => $_POST['tune_body'],
+                'audio'                 => 'None',                          
+                'video'                 => 'None'); 
+    }
     $query = "INSERT INTO tunes VALUES(NULL,:param0,:param1,:param2,:param3,:param4,:param5,
         :param6,:param7,:param8,:param9);";    
     

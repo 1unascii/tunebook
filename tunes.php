@@ -79,7 +79,7 @@
         
         //Hide error message if there are no tunes of a particular type
         if(is_array($value)){
-            
+
             //There are tunes in this array so we can display them in the list
             foreach($value as $t){ //t for tune
         
@@ -100,11 +100,16 @@
                         echo $author[0]['user_name'];
                     echo "</td>";
                     //Composer
+                    
                     echo "<td>";
+
+                    if(isset($t['composer_id'])){
                         $composer_id = $t['composer_id'];
                         $composer = simpleQuery("SELECT composer_name FROM composers WHERE composer_id = $composer_id");
-                        echo $composer[0]['composer_name'];
-                    echo "</td>"; 
+                        echo $composer[0]['composer'];
+                        echo "</td>";    
+                    }
+                    
                     //Key
                     echo "<td>";
                         echo $t['key']; 

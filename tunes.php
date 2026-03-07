@@ -90,7 +90,7 @@
                     $t_title = $t['tune_title'];
                     echo "<td><span class='tune_title' id=$t_id >";
                         //Display Sheet Music button
-                        echo "<img src='images/notes.gif' alt='display sheet music'/>";
+                        echo "<img class='music_note_icon' src='images/notes.gif' alt='display sheet music' style='padding-top: 5px'/>";
                         echo "$t_title";
                     echo "</span></td>";
                     //Author

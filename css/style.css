@@ -65,3 +65,6 @@ td                                      {
                                         display: inline-block;
                                         color: white;
                                         }
+img                                     {
+                                        padding-top: 10px;
+}

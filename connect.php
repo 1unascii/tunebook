@@ -3,7 +3,7 @@
 /*CONNECT TO THE DATABASE, return connection object*/
 function connect(){
     try{
-        $db = new PDO('mysql:dbname=mytunebook;host=localhost', 'student', 'student');        
+        $db = new PDO('mysql:dbname=tunebook;host=localhost', 'student', 'student');        
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return $db;
     }

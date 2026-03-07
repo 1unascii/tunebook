@@ -1,7 +1,8 @@
 a, img                      {
                             padding-right: 10px;
                             cursor: pointer;
-                            padding-left: 1px;                            
+                            padding-left: 1px; 
+
                             }
 #tunes_info, #tunes_filter  {
                             padding-top: 10px;
@@ -12,4 +13,3 @@ a, img                      {
 label                       {
                             width: 200px;
                             }
-

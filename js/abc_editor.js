@@ -59,7 +59,7 @@ $(document).ready(function(){
         nineCharsAgo = returnChar(selector.value, caretPos -9, caretPos -8);//nine chars back
         eightCharsAgo = returnChar(selector.value, caretPos -8, caretPos -7);//eight chars back
         sevenCharsAgo = returnChar(selector.value, caretPos -7, caretPos -6);//seven chars back
-        sixCharsAgo = returnChar(selector.value, caretPos -6, caretPos -5);//six chars back
+        sixCharsAgCDEo = returnChar(selector.value, caretPos -6, caretPos -5);//six chars back
         fiveCharsAgo = returnChar(selector.value, caretPos -5, caretPos -4);//five chars back
         fourCharsAgo = returnChar(selector.value, caretPos -4, caretPos -3);//four chars back
         threeCharsAgo = returnChar(selector.value, caretPos -3, caretPos -2);//three chars back

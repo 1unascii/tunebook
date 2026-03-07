@@ -15,7 +15,7 @@
 <form id="form_for_new_tune">
 
 <label>Title: </label>
-<input type="text" id="tune_title" <?php if($_GET['title']){?>value=<?php echo $_GET['title'];}?> name="tune_title"/>
+<input type="text" id="tune_title" <?php if(isset($_GET['title'])){?>value=<?php echo $_GET['title'];}?> name="tune_title"/>
 <br />
 <!--pre>
 <?php

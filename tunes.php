@@ -1,5 +1,10 @@
 <?php
-    session_start();
+    
+    //Start a session if one has not been started yet
+    if (session_status() === PHP_SESSION_NONE){
+        session_start();
+    }
+
     include_once('connect.php');
     $tune_types = simpleQuery('SELECT * FROM tune_types');
     $tune_type_ids = array();
@@ -67,48 +72,53 @@
         echo "<table id=$lowerCaseTuneType>";//a table with an id of the tune name (lower case)
         echo "<thead class='ui-state-default'><th>Title</th><th>Transcriber</th><th>Composer</th><th>Key</th></thead>";//table headings
         //An extra header for the trash can icon to delete that user's tunes
-        if($_SESSION['Authenticated']){
+        if(array_key_exists('Authenticated', $_SESSION)){
             echo "<th style='display:none;'></th>";
         } 
         echo "<tbody class='ui-state-default'>";
         
-        foreach($value as $t){ //t for tune
+        //Hide error message if there are no tunes of a particular type
+        if(is_array($value)){
+            
+            //There are tunes in this array so we can display them in the list
+            foreach($value as $t){ //t for tune
         
-        //Row
-            echo "<tr class='tune_data'>";
-                //Title
-                $t_id = $t['tune_id'];
-                $t_title = $t['tune_title'];
-                echo "<td><span class='tune_title' id=$t_id >";
-                    //Display Sheet Music button
-                    echo "<img src='images/notes.gif' alt='display sheet music'/>";
-                    echo "$t_title";
-                echo "</span></td>";
-                //Author
-                echo "<td>";                
-                    $author_id = $t['author_id'];                               
-                    $author = simpleQuery("SELECT user_name FROM users WHERE user_id = $author_id");
-                    echo $author[0]['user_name'];
-                echo "</td>";
-                //Composer
-                echo "<td>";
-                    $composer_id = $t['composer_id'];
-                    $composer = simpleQuery("SELECT composer_name FROM composers WHERE composer_id = $composer_id");
-                    echo $composer[0]['composer_name'];
-                echo "</td>"; 
-                //Key
-                echo "<td>";
-                    echo $t['key']; 
-                echo "</td>";        
-                if($_SESSION['Authenticated']){
-                    echo "<td>";
-                    if($_SESSION['author_id'] == $t['author_id']){       //Delete action
-                        echo "<span class='ui-icon ui-icon-trash' style='display: inline-block;'></span>";
-                    }
+                //Row
+                echo "<tr class='tune_data'>";
+                    //Title
+                    $t_id = $t['tune_id'];
+                    $t_title = $t['tune_title'];
+                    echo "<td><span class='tune_title' id=$t_id >";
+                        //Display Sheet Music button
+                        echo "<img src='images/notes.gif' alt='display sheet music'/>";
+                        echo "$t_title";
+                    echo "</span></td>";
+                    //Author
+                    echo "<td>";                
+                        $author_id = $t['author_id'];                               
+                        $author = simpleQuery("SELECT user_name FROM users WHERE user_id = $author_id");
+                        echo $author[0]['user_name'];
                     echo "</td>";
-                }
-            //End row
-            echo "</tr>";            
+                    //Composer
+                    echo "<td>";
+                        $composer_id = $t['composer_id'];
+                        $composer = simpleQuery("SELECT composer_name FROM composers WHERE composer_id = $composer_id");
+                        echo $composer[0]['composer_name'];
+                    echo "</td>"; 
+                    //Key
+                    echo "<td>";
+                        echo $t['key']; 
+                    echo "</td>";        
+                    if(array_key_exists('Authenticated', $_SESSION)){
+                        echo "<td>";
+                        if($_SESSION['author_id'] == $t['author_id']){       //Delete action
+                            echo "<span class='ui-icon ui-icon-trash' style='display: inline-block;'></span>";
+                        }
+                        echo "</td>";
+                    }
+                //End row
+                echo "</tr>";  
+            }          
         }    
         echo "</tbody></table></div>";
         $count++;

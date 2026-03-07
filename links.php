@@ -3,7 +3,7 @@
 <div id='add_tune_link'>New Tune</div>
 <?php
     //IF LOGGED IN
-    if($_SESSION['Authenticated'] == 1){ 
+    if(array_key_exists('Authenticated', $_SESSION)){ 
 ?>      
         <div id='logout_link'>Log Out</div>
 <?php        

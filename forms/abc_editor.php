@@ -47,6 +47,7 @@
     <!--option value="0">None</option-->
     <?php
         $count = 0;
+        echo "<option></option>";
         foreach($composers as $value){
             echo "<option>" . $composers[$count]['composer_name'] . "</option>";
             $count++;

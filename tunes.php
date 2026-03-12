@@ -53,11 +53,9 @@
 
     $count = 0;
     foreach($tune_type_names as $value){
-        if($count > 0){
+        
         echo   "<li><a href='#tabs-$count'>$tune_type_names[$count]s</a></li>";
-        }else {
-             echo   "<li><a href='#tabs-$count'>$tune_type_names[$count]</a></li>";
-        }
+        
         $count++;
     }
     echo "</ul>";

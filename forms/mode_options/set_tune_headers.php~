@@ -1,7 +1,7 @@
 <?php
     session_start();
     include_once('../connect.php');
-    include_once('../functions.php');
+    //include_once('../functions.php');
 ?>
 <script type="text/javascript" src="js/set_tune_headers.js"></script>
 <script src="js/abcjs_editor_1.5-min.js" type="text/javascript"></script>
@@ -99,8 +99,8 @@
                 <option id="a">A</option>
                 <option id="e">E</option>
                 <option id="b">B</option>
-                <option id="f#">F#</option>
-                <option id="c#">C#</option>
+                <option id="fsharp">F#</option>
+                <option id="csharp">C#</option>
                 <option id="f">F</option>
                 <option id="bb">Bb</option>
                 <option id="eb">Eb</option>

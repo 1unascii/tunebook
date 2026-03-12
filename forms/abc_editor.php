@@ -1,7 +1,7 @@
 <?php
     session_start();
     include_once('../connect.php');
-    include_once('../functions.php');
+    //include_once('../functions.php');
     //include_once('../links.php');
 ?>
 <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
@@ -87,8 +87,8 @@
     <option id="a">A</option>
     <option id="e">E</option>
     <option id="b">B</option>
-    <option id="f\#">F#</option>
-    <option id="c\#">C#</option>
+    <option id="fsharp">F#</option>
+    <option id="csharp">C#</option>
     <option id="f">F</option>
     <option id="bb">Bb</option>
     <option id="eb">Eb</option>

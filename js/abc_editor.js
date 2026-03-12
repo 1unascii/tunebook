@@ -1,7 +1,14 @@
 
 $(document).ready(function(){
     var abc = false;
-    var editor
+    /*A*/
+    var editor1 = document.getElementById("abc");
+    editor1.spellcheck = false;
+    var lastKey = $('#key').find("option:selected").attr("id");
+    var lastKeyVal = '';
+    var lastMode = $('#tune_mode_input').find("option:selected").attr("id");
+    var lastModeVal = '';
+    //var editor
     var selection = '';//for playing selections
     //var available_notes = new Array("C,", "D,", "E,", "F,", "G,", "A,", "B,", "C", "D", "E", "F", "G", "A", "B", "c", "d", "e", "f", "g", "a", "b", "c'", "d'", "e'", "f'", "g'", "a'", "b'");
     var sharps = ["F", "f"];//will have to change to empty array if the "playKeys()" function starts at 0 instead of 1
@@ -166,7 +173,7 @@ $(document).ready(function(){
     }
 
     //if the current key is in the keys array then play the content using the appropriate accidental modifiers
-    function playKey(key, keys, args){
+    /*function playKey(key, keys, args){
         if(key == keys[0] || key == keys[1] || key == keys[2] || key == keys[3]){
             if(args.length > 3){
                 $(this).play(accidentalNotes(args[0], args[1], args[2], args[3]));
@@ -177,7 +184,7 @@ $(document).ready(function(){
         }else{
             return false
         }
-    }
+    }*/
 
     /*
     iterate through the keys array to see when the current key is matched. At every iteration, 
@@ -187,7 +194,7 @@ $(document).ready(function(){
     element in the keys array, the sharps or flats array should contain all the appropriate sharps 
     or flats for the key set that yeilded a match
     */
-    function playKeys(key, keys, sharpsOrFlats, toPush, symbol, keyPress, bool){
+    /*function playKeys(key, keys, sharpsOrFlats, toPush, symbol, keyPress, bool){
         for(var i=1; i<keys.length; i++){
             if(bool){
                 if(!playKey(key, keys[i], [sharpsOrFlats, symbol, keyPress, bool])){
@@ -207,7 +214,7 @@ $(document).ready(function(){
             
         }
         return false;
-    }
+    }*/
 
     //insures that the global character values are updated on every click in the abc text area
     $('#abc').on("click", function(){
@@ -505,18 +512,12 @@ $(document).ready(function(){
         abc_code = $('#abc').val();        
         abc_editor = ABCJS.renderAbc("canvas", hdr + abc_code);               
     }
-    /*A*/
-    var editor1 = document.getElementById("abc");
-    editor1.spellcheck = false;
-    var lastKey = $('#key').find("option:selected").attr("id");
-    var lastKeyVal = '';
-    var lastMode = $('#tune_mode_input').find("option:selected").attr("id");
-    var lastModeVal = '';
+    
     
     
     //triggers test if every 1000ms if our input fields have changed.
     //this tends to drag really slow browsers/computers. The interval was changed from 500 to 1000 which seems fast enough
-    setInterval(function (){        
+    /*setInterval(function (){        
         if($('#key').find("option:selected").attr("id") !== lastKey){
             lastKey = $('#key').find("option:selected").attr("id");
             start_new_abc();
@@ -542,7 +543,7 @@ $(document).ready(function(){
             lastMode = $('#tune_mode_input').find("option:selected").attr("id");
             start_new_abc();
         }
-    }, 1000);
+    }, 1000);*/
     
     //if any of these fields change the abc should be updated
     //once again this can drag slower computers.
@@ -580,6 +581,7 @@ $(document).ready(function(){
            $('#play').remove();
             selection == '';
         }
+        start_new_abc();
     })
     $('#abc').on('change keyup', function(){
         //$('#canvas_wrapper').load("<div id='canvas' ></div><script src='abcjs_editor_1.8-min.js' type='text/javascript'></script>");       

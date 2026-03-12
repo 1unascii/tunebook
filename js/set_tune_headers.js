@@ -71,13 +71,13 @@ $(document).ready(function(){
             start_new_abc();            
         } else 
         if($('#tune_mode_input').find("option:selected").attr("id") !== lastMode){            
-            var lastKey2 = '';
+            /*var lastKey2 = '';
             var intervalId = setInterval(function(){
                 if($('#key').val() !== lastKey2){
                    lastKey2 = $('#key').val();
                     start_new_abc();
                 }        
-            }, 666);
+            }, 666);*/
             lastMode = $('#tune_mode_input').find("option:selected").attr("id");
             start_new_abc();
         }       

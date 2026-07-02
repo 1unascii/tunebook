@@ -1,5 +1,9 @@
 @props(['setting', 'showTuneInfo' => false])
 
+@php
+    $instruments = \App\Models\Instrument::orderBy('name')->get();
+@endphp
+
 <div class="card bg-base-200 shadow-sm">
     <div class="card-body">
         @if($showTuneInfo)
@@ -25,7 +29,28 @@
             </div>
         </div>
 
-        <div class="abc-notation mt-4" data-abc="{{ $setting->toAbc() }}"></div>
+        <div class="abc-notation mt-4"
+            data-abc="{{ $setting->toAbc() }}"
+            data-setting-id="{{ $setting->id }}"
+            data-instrument-id="{{ $setting->instrument_id }}"></div>
+
+        {{-- Instrument select and MIDI player --}}
+        <div class="mt-3 flex flex-wrap items-center gap-3">
+            <label class="text-sm">
+                Instrument:
+                <select class="select select-bordered select-sm setting-instrument"
+                    data-setting-id="{{ $setting->id }}">
+                    @foreach($instruments as $instrument)
+                        <option value="{{ $instrument->midi_program }}"
+                            {{ ($setting->instrument_id ?? 1) == $instrument->id ? 'selected' : '' }}>
+                            {{ $instrument->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </label>
+        </div>
+
+        <div class="midi-player mt-3" id="midi-player-{{ $setting->id }}"></div>
 
         @if($setting->source || $setting->book || $setting->transcription_credit)
             <div class="mt-2 text-xs text-base-content/50 space-y-1">

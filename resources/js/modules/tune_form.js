@@ -114,6 +114,52 @@ function abcToMidi(abc) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// MEASURE ACCIDENTAL LOOKUP
+// In ABC notation, an accidental (^ _ =) on a note applies to all
+// subsequent occurrences of that same note letter (case-sensitive)
+// within the same measure. The measure ends at a barline (|).
+//
+// For example, in the key of G: ^c d e c
+// The first c has ^, so the second c is also sharp even though
+// it has no explicit ^ prefix. A barline resets everything.
+//
+// This function scans backwards from the cursor to find if the
+// note being typed was already modified by an accidental earlier
+// in the measure. Returns the accidental string (e.g. "^", "__")
+// or null if no measure accidental applies.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function findMeasureAccidental(val, pos, noteChar) {
+    var i = pos - 1;
+    while (i >= 0) {
+        var ch = val[i];
+
+        // Hit a barline — stop searching, no accidental applies
+        if (ch === '|') {
+            return null;
+        }
+
+        // Found an accidental modifier
+        if (ch === '^' || ch === '_' || ch === '=') {
+            // Check if the character to the right is our note
+            // Compare case-insensitively so ^C also applies to c and vice versa
+            var rightChar = val[i + 1];
+            if (rightChar && rightChar.toUpperCase() === noteChar.toUpperCase()) {
+                // Check for double accidental (^^ or __)
+                var leftChar = (i > 0) ? val[i - 1] : '';
+                if (leftChar === ch) {
+                    return leftChar + ch;
+                }
+                return ch;
+            }
+        }
+
+        i--;
+    }
+    return null;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // NOTE PLAYBACK
 // Uses ABCJS synth to play a single note with current instrument/volume/tempo
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -450,44 +496,95 @@ window.tuneForm = function(config) {
             // Characters surrounding cursor
             const lastChar = val.substring(pos - 1, pos);
             const charBeforeLast = val.substring(pos - 2, pos - 1);
+            const threeCharsAgo = val.substring(pos - 3, pos - 2);
             const nextChar = val.substring(pos, pos + 1);
             const charAfterNext = val.substring(pos + 1, pos + 2);
-            const threeCharsAhead = val.substring(pos + 2, pos + 3);
             const letters = /^[a-zA-Z]$/;
             const key = this.keySignature;
             const midiProgram = this.getMidiProgram();
+            const v = this.playbackVolume;
+            const t = this.tempo;
+
+            // Grab all consecutive octave modifiers (, ') from a position
+            function grabOctave(val, from) {
+                var s = '';
+                var i = from;
+                while (i < val.length && (val[i] === ',' || val[i] === "'")) {
+                    s += val[i];
+                    i++;
+                }
+                return s;
+            }
 
             if (keyPress === '^' || keyPress === '_' || keyPress === '=') {
-                // Accidental prefix — play the note it modifies
-                if (nextChar === keyPress && letters.test(charAfterNext)) {
-                    playNote(keyPress + nextChar + charAfterNext, this.playbackVolume, this.tempo, midiProgram);
+                // Typing second accidental to make double (e.g. __ before B)
+                if (lastChar === keyPress && nextChar.match(letters)) {
+                    var octaveModifiers = grabOctave(val, pos + 1);
+                    playNote(lastChar + keyPress + nextChar + octaveModifiers, v, t, midiProgram);
+                // Double accidental already exists ahead
+                } else if (nextChar === keyPress && letters.test(charAfterNext)) {
+                    var oct = grabOctave(val, pos + 3);
+                    playNote(keyPress + nextChar + charAfterNext + oct, v, t, midiProgram);
+                // Accidental between existing accidental and note
+                } else if ((lastChar === '^' || lastChar === '_') && nextChar.match(letters)) {
+                    var octaveModifiers = grabOctave(val, pos + 1);
+                    playNote(lastChar + keyPress + nextChar + octaveModifiers, v, t, midiProgram);
+                // Single accidental before note
                 } else if (nextChar.match(letters)) {
-                    if (charAfterNext === ',' || charAfterNext === "'") {
-                        playNote(keyPress + nextChar + charAfterNext, this.playbackVolume, this.tempo, midiProgram);
-                    } else {
-                        playNote(keyPress + nextChar, this.playbackVolume, this.tempo, midiProgram);
-                    }
+                    var octaveModifiers = grabOctave(val, pos + 1);
+                    playNote(keyPress + nextChar + octaveModifiers, v, t, midiProgram);
                 }
 
             } else if (lastChar === '^' || lastChar === '_') {
-                // Note typed after accidental prefix
+                // Note typed after accidental — grab trailing octave modifiers
+                var trailing = grabOctave(val, pos);
                 if (charBeforeLast === lastChar) {
-                    playNote(charBeforeLast + lastChar + keyPress, this.playbackVolume, this.tempo, midiProgram);
+                    playNote(charBeforeLast + lastChar + keyPress + trailing, v, t, midiProgram);
                 } else {
-                    playNote(lastChar + keyPress, this.playbackVolume, this.tempo, midiProgram);
+                    playNote(lastChar + keyPress + trailing, v, t, midiProgram);
                 }
 
             } else if (keyPress === ',' || keyPress === "'") {
-                // Octave modifier — reconstruct full note string
-                if (lastChar === '^' || lastChar === '_' || lastChar === '=') {
-                    playNote(charBeforeLast + lastChar + keyPress, this.playbackVolume, this.tempo, midiProgram);
+                // Octave modifier typed — grab all trailing octave modifiers
+                var trailingOctave = grabOctave(val, pos);
+
+                if (charBeforeLast === '^' || charBeforeLast === '_' || charBeforeLast === '=') {
+                    if (threeCharsAgo === charBeforeLast) {
+                        playNote(threeCharsAgo + charBeforeLast + lastChar + keyPress + trailingOctave, v, t, midiProgram);
+                    } else {
+                        playNote(charBeforeLast + lastChar + keyPress + trailingOctave, v, t, midiProgram);
+                    }
+                } else if (lastChar === ',' || lastChar === "'") {
+                    // Walk backwards to find full note string
+                    var i = pos - 1;
+                    while (i >= 0 && (val[i] === ',' || val[i] === "'")) i--;
+                    if (i >= 0 && /[A-Ga-g]/.test(val[i])) {
+                        var noteStart = i;
+                        var accidentalCount = 0;
+                        while (noteStart > 0 && accidentalCount < 2 &&
+                            (val[noteStart - 1] === '^' ||
+                             val[noteStart - 1] === '_' ||
+                             val[noteStart - 1] === '=')) {
+                            noteStart--;
+                            accidentalCount++;
+                        }
+                        var fullNote = val.substring(noteStart, pos) + keyPress + trailingOctave;
+                        playNote(fullNote, v, t, midiProgram);
+                    }
                 } else if (lastChar.match(letters)) {
-                    playNote(keySpecificPlayback(key, lastChar) + keyPress, this.playbackVolume, this.tempo, midiProgram);
+                    playNote(keySpecificPlayback(key, lastChar) + keyPress + trailingOctave, v, t, midiProgram);
                 }
 
             } else {
-                // Plain note letter — apply key signature accidentals
-                playNote(keySpecificPlayback(key, keyPress), this.playbackVolume, this.tempo, midiProgram);
+                // Plain note letter — check for earlier accidental in measure
+                var measureAccidental = findMeasureAccidental(
+                    val, pos, keyPress
+                );
+                if (measureAccidental) {
+                    playNote(measureAccidental + keyPress, v, t, midiProgram);
+                } else {
+                    playNote(keySpecificPlayback(key, keyPress), v, t, midiProgram);
+                }
             }
         },
 

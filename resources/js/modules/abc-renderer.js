@@ -117,10 +117,67 @@ function renderAbcNotation() {
         controlsDiv.appendChild(tuningLabel);
         el.parentNode.insertBefore(controlsDiv, el);
 
-        abcjs.renderAbc(el, el.dataset.abc, { responsive: 'resize' });
+        // Find the MIDI instrument dropdown for this setting
+        var settingId = el.dataset.settingId;
+        var playerEl = document.getElementById('midi-player-' + settingId);
+        var synthControl = null;
+        var instrumentSelect = document.querySelector(
+            '.setting-instrument[data-setting-id="' + settingId + '"]'
+        );
+
+        // Returns the ABC string with %%MIDI program inserted
+        // based on the current instrument dropdown selection
+        function getAbcWithMidi() {
+            var abc = el.dataset.abc;
+            if (instrumentSelect) {
+                var midiProgram = instrumentSelect.value;
+                abc = abc.replace(
+                    /^(K:.*)$/m,
+                    '%%MIDI program ' + midiProgram + '\n$1'
+                );
+            }
+            return abc;
+        }
+
+        function initMidiPlayer(visObj) {
+            if (!playerEl || !abcjs.synth) return;
+            if (!synthControl) {
+                synthControl = new abcjs.synth.SynthController();
+                synthControl.load('#midi-player-' + settingId, null, {
+                    displayLoop: true,
+                    displayRestart: true,
+                    displayPlay: true,
+                    displayProgress: true,
+                    displayWarp: true
+                });
+            }
+            if (visObj && visObj[0]) {
+                synthControl.setTune(visObj[0], false).catch(function() {});
+            }
+        }
+
+        // Initial render with MIDI program from instrument dropdown
+        var visualObj = abcjs.renderAbc(el, getAbcWithMidi(), {
+            responsive: 'resize',
+            add_classes: true
+        });
+        initMidiPlayer(visualObj);
+
+        // Re-render when instrument select changes — rebuild the
+        // synth controller so it loads the new instrument's soundfont
+        if (instrumentSelect) {
+            instrumentSelect.addEventListener('change', function() {
+                if (synthControl) {
+                    try { synthControl.pause(); } catch(e) {}
+                }
+                synthControl = null;
+                playerEl.innerHTML = '';
+                rerender();
+            });
+        }
 
         function rerender() {
-            var options = { responsive: 'resize' };
+            var options = { responsive: 'resize', add_classes: true };
             if (checkbox.checked) {
                 select.style.display = '';
                 var instrumentBase = select.value;
@@ -159,7 +216,8 @@ function renderAbcNotation() {
                 // to prevent abcjs from crashing on invalid/partial input
                 if (isCustom && !tabConfig.tuning) {
                     options.tablature = undefined;
-                    abcjs.renderAbc(el, el.dataset.abc, options);
+                    var vis = abcjs.renderAbc(el, getAbcWithMidi(), options);
+                    initMidiPlayer(vis);
                     return;
                 }
 
@@ -169,14 +227,18 @@ function renderAbcNotation() {
                 droneLabel.style.display = 'none';
                 tuningLabel.style.display = 'none';
             }
+            var abcString = getAbcWithMidi();
             try {
                 el.innerHTML = '';
-                abcjs.renderAbc(el, el.dataset.abc, options);
+                visualObj = abcjs.renderAbc(el, abcString, options);
             } catch (e) {
                 console.error('Tablature render error:', e);
                 el.innerHTML = '';
-                abcjs.renderAbc(el, el.dataset.abc, { responsive: 'resize' });
+                visualObj = abcjs.renderAbc(el, abcString, {
+                    responsive: 'resize'
+                });
             }
+            initMidiPlayer(visualObj);
         }
 
         checkbox.addEventListener('change', rerender);

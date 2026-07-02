@@ -7,7 +7,7 @@
       - request()->is() is used as a fallback for routes that don't have names yet.
         Once those routes are given names in web.php, switch them to routeIs().
 --}}
-<nav class="nav-overlay flex items-center gap-10 px-4 py-3 w-full -mt-[60px] mb-10 z-10 relative font-[Fondamento] bg-base-300/80 backdrop-blur-[10px]">
+<nav class="nav-overlay flex items-center gap-10 px-4 py-3 w-full mb-10 z-10 relative font-[Fondamento] bg-base-300/80 backdrop-blur-[10px]">
     <a href="/" class="nav-link {{ request()->routeIs('home') ? 'nav-link-active' : '' }}">Home</a>
     <a href="/tunes" class="nav-link {{ request()->routeIs('tunes.index', 'tunes.show') ? 'nav-link-active' : '' }}">Tunes</a>
 

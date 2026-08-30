@@ -126,7 +126,7 @@
                             </table>
                         </div>
                         {{-- JS pagination controls are injected here by modules/tunes/index.js --}}
-                        <div class="pagination-controls flex gap-2 mt-4"></div>
+                        <div class="pagination-controls flex flex-wrap gap-2 mt-4"></div>
                     @endif
                 </div>
             @endforeach

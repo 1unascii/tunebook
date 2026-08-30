@@ -157,43 +157,54 @@ class CollectionController extends Controller
                 $tune = $existingTune;
                 $results['existing']++;
             } else {
-                // Find or create the composer from the C: header
-                $composer = null;
-                if ($tuneData['composer']) {
-                    $composer = Composer::firstOrCreate(['name' => trim($tuneData['composer'])]);
+                try {
+                    // Find or create the composer from the C: header
+                    $composer = null;
+                    if ($tuneData['composer']) {
+                        $composer = Composer::firstOrCreate(['name' => trim($tuneData['composer'])]);
+                    }
+
+                    // Validate field lengths to prevent DB truncation errors
+                    $timeSig = $tuneData['time_signature'] ?? '4/4';
+                    if (strlen($timeSig) > 7) { $timeSig = '4/4'; }
+                    $noteLen = $tuneData['default_note_length'] ?? '1/8';
+                    if (strlen($noteLen) > 7) { $noteLen = '1/8'; }
+
+                    // Create the tune
+                    $tune = Tune::create([
+                        'name' => $tuneData['name'],
+                        'tune_type_id' => $tuneType?->id,
+                        'composer_id' => $composer?->id,
+                        'origin' => $tuneData['origin'],
+                        'source' => $tuneData['source'],
+                    ]);
+
+                    // Create its first setting using the parsed ABC data
+                    Setting::create([
+                        'tune_id' => $tune->id,
+                        'user_id' => auth()->id(),
+                        'name' => $tuneData['name'],
+                        'time_signature' => $timeSig,
+                        'default_note_length' => $noteLen,
+                        'key_signature' => $tuneData['key_signature'],
+                        'abc_transcription' => $tuneData['abc_body'],
+                        'source' => $tuneData['source'],
+                        'book' => $tuneData['book'],
+                        'transcription_credit' => $tuneData['transcription_credit'],
+                        'notes' => $tuneData['notes'],
+                        'history' => $tuneData['history'],
+                        'origin' => $tuneData['origin'],
+                        'area' => $tuneData['area'],
+                        'parts' => $tuneData['parts'],
+                        'lyrics' => $tuneData['lyrics'],
+                        'discography' => $tuneData['discography'],
+                    ]);
+
+                    $results['created']++;
+                } catch (\Exception $e) {
+                    $results['skipped']++;
+                    continue;
                 }
-
-                // Create the tune
-                $tune = Tune::create([
-                    'name' => $tuneData['name'],
-                    'tune_type_id' => $tuneType?->id,
-                    'composer_id' => $composer?->id,
-                    'origin' => $tuneData['origin'],
-                    'source' => $tuneData['source'],
-                ]);
-
-                // Create its first setting using the parsed ABC data
-                Setting::create([
-                    'tune_id' => $tune->id,
-                    'user_id' => auth()->id(),
-                    'name' => $tuneData['name'],
-                    'time_signature' => $tuneData['time_signature'] ?? '4/4',
-                    'default_note_length' => $tuneData['default_note_length'] ?? '1/8',
-                    'key_signature' => $tuneData['key_signature'],
-                    'abc_transcription' => $tuneData['abc_body'],
-                    'source' => $tuneData['source'],
-                    'book' => $tuneData['book'],
-                    'transcription_credit' => $tuneData['transcription_credit'],
-                    'notes' => $tuneData['notes'],
-                    'history' => $tuneData['history'],
-                    'origin' => $tuneData['origin'],
-                    'area' => $tuneData['area'],
-                    'parts' => $tuneData['parts'],
-                    'lyrics' => $tuneData['lyrics'],
-                    'discography' => $tuneData['discography'],
-                ]);
-
-                $results['created']++;
             }
 
             // Attach tune to collection with sequential position

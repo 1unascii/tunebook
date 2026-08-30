@@ -8,6 +8,7 @@ use App\Models\Setting;
 use App\Models\Tune;
 use App\Models\TuneType;
 use App\Services\AbcParser;
+use App\Services\AbcBodyFormatter;
 use Illuminate\Http\Request;
 
 /**
@@ -133,6 +134,7 @@ class CollectionController extends Controller
         // Process each parsed tune — find or create, then attach to collection
         $results = ['created' => 0, 'existing' => 0, 'skipped' => 0];
         $position = 1;
+        $formatter = new AbcBodyFormatter();
 
         foreach ($parsedTunes as $tuneData) {
             // Skip tunes without valid ABC notation (must contain barlines)
@@ -179,6 +181,13 @@ class CollectionController extends Controller
                         'source' => $tuneData['source'],
                     ]);
 
+                    // Format ABC body to 4 measures per line
+                    $formattedBody = $formatter->format(
+                        $tuneData['abc_body'],
+                        $timeSig,
+                        $noteLen
+                    );
+
                     // Create its first setting using the parsed ABC data
                     Setting::create([
                         'tune_id' => $tune->id,
@@ -187,7 +196,7 @@ class CollectionController extends Controller
                         'time_signature' => $timeSig,
                         'default_note_length' => $noteLen,
                         'key_signature' => $tuneData['key_signature'],
-                        'abc_transcription' => $tuneData['abc_body'],
+                        'abc_transcription' => $formattedBody,
                         'source' => $tuneData['source'],
                         'book' => $tuneData['book'],
                         'transcription_credit' => $tuneData['transcription_credit'],
